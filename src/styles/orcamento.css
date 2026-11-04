@@ -1,0 +1,301 @@
+/* ==========================================================
+   ORÇAMENTO / VAMOS CONVERSAR – Seção Final da Landing Page
+   Estética monocromática, editorial, tecnológica e de alta conversão.
+   Fundo da seção: Predictive Arc (malha interativa WebGL).
+   Fundo do Card: Ribbon Glow (WebGL2 com fitas orgânicas fluidas).
+   ========================================================== */
+
+#orcamento {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  background-color: var(--bg);
+  border-top: 1px solid var(--gray-800);
+  padding: 14vh 0 10vh 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-margin-top: 80px;
+}
+
+/* ── Canvas de Fundo da Seção: Predictive Arc (WebGL) ── */
+.orcamento-bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* ── Container principal ── */
+.orcamento-container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 48px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Grande Painel / Card de Conversão ── */
+.orcamento-card {
+  position: relative;
+  width: 100%;
+  background-color: rgba(5, 5, 5, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 28px;
+  padding: clamp(48px, 6vw, 84px) clamp(32px, 5vw, 76px);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.85),
+    0 32px 80px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Canvas WebGL2 Ribbon Glow dentro do Card */
+.orcamento-card-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.9;
+}
+
+/* Conteúdo interno do card */
+.orcamento-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* ── Título Principal Dominante ── */
+.orcamento-title-wrap {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.orcamento-title {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.75rem, 6.2vw, 6.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  color: #FFFFFF;
+  margin: 0;
+  text-align: left;
+  text-wrap: balance;
+  max-width: 15ch;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.8);
+}
+
+/* ── Texto Complementar ── */
+.orcamento-desc {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1.05rem, 1.25vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.65;
+  color: #A0A0A0;
+  max-width: 58ch;
+  margin-top: clamp(24px, 3.5vh, 36px);
+  margin-bottom: 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+}
+
+/* ── Grupo de Botões de Conversão ── */
+.orcamento-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: clamp(36px, 5vh, 52px);
+}
+
+/* BOTÃO 01 — Solicitar orçamento → */
+.btn-orcamento-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 36px;
+  background-color: #FFFFFF;
+  color: #050505;
+  border: 1px solid #FFFFFF;
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: none;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.15);
+  transition:
+    background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.btn-orcamento-primary .arrow {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-orcamento-primary:hover,
+.btn-orcamento-primary:focus-visible {
+  background-color: #EDEDED;
+  border-color: #EDEDED;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 255, 255, 0.25);
+}
+
+.btn-orcamento-primary:hover .arrow,
+.btn-orcamento-primary:focus-visible .arrow {
+  transform: translateX(5px);
+}
+
+/* BOTÃO 02 — Conversar pelo WhatsApp */
+.btn-orcamento-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 32px;
+  background-color: rgba(255, 255, 255, 0.03);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: none;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.btn-orcamento-secondary svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-orcamento-secondary:hover,
+.btn-orcamento-secondary:focus-visible {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+}
+
+.btn-orcamento-secondary:hover svg,
+.btn-orcamento-secondary:focus-visible svg {
+  transform: scale(1.1);
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVIDADE
+═══════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .orcamento-container {
+    padding: 0 32px;
+  }
+
+  .orcamento-card {
+    padding: 48px 36px;
+  }
+
+  .orcamento-title {
+    max-width: 16ch;
+  }
+}
+
+@media (max-width: 768px) {
+  #orcamento {
+    padding: 10vh 0 6vh 0;
+    min-height: auto;
+  }
+
+  .orcamento-container {
+    padding: 0 20px;
+  }
+
+  .orcamento-card {
+    border-radius: 20px;
+    padding: 36px 20px 28px 20px;
+  }
+
+  .orcamento-title {
+    font-size: clamp(2.2rem, 9.5vw, 3.4rem);
+    line-height: 1.0;
+    max-width: 100%;
+  }
+
+  .orcamento-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 100%;
+    margin-top: 20px;
+  }
+
+  .orcamento-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .btn-orcamento-primary,
+  .btn-orcamento-secondary {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 14.5px;
+  }
+
+  .orcamento-bottom-line {
+    margin-top: 36px;
+    margin-bottom: 20px;
+  }
+
+  .orcamento-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 10.5px;
+  }
+}
+
+/* ── Prevenção para Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+
+  .btn-orcamento-primary,
+  .btn-orcamento-secondary,
+  .btn-orcamento-primary .arrow,
+  .btn-orcamento-secondary svg {
+    transition: none !important;
+    transform: none !important;
+  }
+}

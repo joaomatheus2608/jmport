@@ -1,0 +1,84 @@
+/* ==========================================================
+   DESIGN TOKENS – Matheus Dev Portfolio
+   Referência única de valores globais do design system.
+   ========================================================== */
+
+:root {
+  /* ── Cores base ── */
+  --bg:           #050505;
+  --bg-elevated:  #0c0c0c;
+  --gray-900:     #141414;
+  --gray-800:     #1c1c1c;
+  --gray-700:     #2a2a2a;
+  --gray-600:     #3d3d3d;
+  --gray-500:     #6b6b6b;
+  --gray-400:     #8a8a8a;
+  --gray-300:     #a8a8a8;
+  --gray-100:     #e6e6e6;
+  --white:        #fafafa;
+
+  /* ── Escala de espaçamento (base 4px) ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ── Raios ── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-pill: 999px;
+
+  /* ── Durações ── */
+  --dur-fast:   150ms;
+  --dur-base:   300ms;
+  --dur-slow:   600ms;
+  --dur-xslow:  900ms;
+
+  /* ── Easings ── */
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Tipografia: tamanhos de referência ── */
+  --font-mono-xs:   10px;
+  --font-mono-sm:   11px;
+  --font-mono-base: 12px;
+  --font-mono-md:   13px;
+
+  /* ── Z-index layers ── */
+  --z-canvas:    0;
+  --z-grid:      1;
+  --z-name:      2;
+  --z-cutout:    3;
+  --z-ui:        4;
+  --z-nav:       100;
+  --z-cursor:    9999;
+  --z-overlay:   200;
+}
+
+/* ── Tema claro (futuro) ── */
+[data-theme="light"] {
+  --bg:           #fafafa;
+  --bg-elevated:  #f0f0f0;
+  --gray-900:     #e6e6e6;
+  --gray-800:     #d4d4d4;
+  --gray-700:     #b0b0b0;
+  --gray-600:     #8a8a8a;
+  --gray-500:     #6b6b6b;
+  --gray-400:     #4a4a4a;
+  --gray-300:     #2a2a2a;
+  --gray-100:     #1c1c1c;
+  --white:        #050505;
+}
+

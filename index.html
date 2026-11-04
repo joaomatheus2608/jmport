@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+
+  <!-- SEO -->
+  <title>Matheus Dev | Páginas e sites que vendem</title>
+  <meta name="description" content="João Matheus, dev web. Páginas de venda, sites institucionais e e-commerce rápidos, feitos sob medida para converter." />
+  <meta name="author" content="João Matheus" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Matheus Dev | Páginas e sites que vendem" />
+  <meta property="og:description" content="João Matheus, dev web. Páginas de venda, sites institucionais e e-commerce rápidos, feitos sob medida para converter." />
+  <meta property="og:type"        content="website" />
+  <meta property="og:locale"      content="pt_BR" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+
+  <!-- Google Fonts: Inter Tight, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Estilos (tokens → base → splash → hero → conceito → projetos → ecossistema → sobre → orcamento) -->
+  <link rel="stylesheet" href="/src/styles/tokens.css" />
+  <link rel="stylesheet" href="/src/styles/base.css" />
+  <link rel="stylesheet" href="/src/styles/splash.css" />
+  <link rel="stylesheet" href="/src/styles/hero.css" />
+  <link rel="stylesheet" href="/src/styles/conceito.css" />
+  <link rel="stylesheet" href="/src/styles/projetos.css" />
+  <link rel="stylesheet" href="/src/styles/ecossistema.css" />
+  <link rel="stylesheet" href="/src/styles/sobre.css" />
+  <link rel="stylesheet" href="/src/styles/orcamento.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       SPLASH SCREEN / PRELOADER (Efeito Download Logo)
+  ══════════════════════════════════════════ -->
+  <div id="splash-screen" class="splash-screen" aria-hidden="true">
+    <div class="splash-content">
+      <div class="splash-logo-wrap">
+        <img
+          src="/assets/logo-jm.jpg"
+          alt="JM"
+          class="splash-logo-img splash-logo-bg"
+        />
+        <img
+          src="/assets/logo-jm.jpg"
+          alt="JM"
+          class="splash-logo-img splash-logo-fill"
+          id="splash-logo-fill"
+        />
+      </div>
+
+      <div class="splash-progress-track">
+        <div class="splash-progress-bar" id="splash-progress-bar"></div>
+      </div>
+
+      <div class="splash-meta">
+        <span class="splash-status" id="splash-status">CARREGANDO</span>
+        <span class="splash-percent" id="splash-percent">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acessibilidade: pular para o conteúdo -->
+  <a class="skip-link" href="#hero">Pular para o conteúdo</a>
+
+  <!-- ══════════════════════════════════════════
+       HEADER FIXO (comprime no centro ao sair do Hero)
+  ══════════════════════════════════════════ -->
+  <header class="site-header" role="banner">
+    <div class="header-capsule">
+      <!-- Logo / Monograma -->
+      <a href="#hero" class="logo" aria-label="Matheus Dev – ir para o início">
+        <img
+          src="/assets/logo-jm.jpg"
+          alt="Logo JM"
+          class="logo-img"
+          width="44"
+          height="44"
+        />
+      </a>
+
+      <!-- Navegação central (desktop: recolhe e some ao sair do Hero) -->
+      <nav class="header-nav" aria-label="Navegação principal">
+        <ul class="nav-links" role="list">
+          <li><a href="#projetos">Projetos</a></li>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+        </ul>
+      </nav>
+
+      <!-- Botão orçamento (desktop) -->
+      <a
+        href="#orcamento"
+        class="btn-header-orcamento"
+        aria-label="Solicitar orçamento"
+      >Orçamento</a>
+    </div>
+
+    <!-- Botão hambúrguer (mobile) -->
+    <button
+      class="hamburger-btn"
+      aria-label="Abrir menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       MENU MOBILE (overlay)
+  ══════════════════════════════════════════ -->
+  <div
+    class="mobile-menu"
+    id="mobile-menu"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu de navegação"
+  >
+    <nav aria-label="Menu mobile">
+      <ul class="mobile-nav-links" role="list">
+        <li><a href="#projetos">Projetos</a></li>
+        <li><a href="#servicos">Serviços</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#orcamento">Orçamento</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       CONTEÚDO PRINCIPAL
+  ══════════════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ────────────────────────────
+         SEÇÃO HERO
+    ──────────────────────────── -->
+    <section id="hero" aria-labelledby="hero-heading">
+
+      <!-- Camada 0: canvas de caracteres -->
+      <canvas
+        id="ascii-canvas"
+        class="ascii-canvas"
+        aria-hidden="true"
+      ></canvas>
+
+      <!-- Camada 1: grade técnica -->
+      <div class="hero-grid" aria-hidden="true"></div>
+
+      <!-- Camada 2: MARQUEE do nome (Base + Spotlight sincronizados) -->
+      <div class="hero-marquee-wrapper" id="hero-marquee" aria-hidden="true">
+        <!-- Camada BASE (cinza escuro com stroke) -->
+        <div class="hero-marquee-layer marquee-layer-base">
+          <div class="hero-marquee-track">
+            <div class="hero-marquee-content">
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+            </div>
+            <div class="hero-marquee-content" aria-hidden="true">
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Camada SPOTLIGHT (branca, máscara segue o mouse) -->
+        <div class="hero-marquee-layer marquee-layer-spotlight">
+          <div class="hero-marquee-track">
+            <div class="hero-marquee-content">
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+            </div>
+            <div class="hero-marquee-content" aria-hidden="true">
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+              <span class="hero-marquee-item">MATHEUS DEV</span>
+              <span class="hero-marquee-sep">•</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- h1 real (acessibilidade / SEO) -->
+      <h1 id="hero-heading" class="sr-only">
+        João Matheus — Matheus Dev — Dev Web
+      </h1>
+
+      <!-- Foto centrada no hero -->
+      <div class="hero-photo-center" aria-hidden="true">
+        <img
+          src="/assets/foto-hero.png"
+          alt=""
+          class="hero-photo-img"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Camada 4: rodapé do hero (tagline + CTAs) -->
+      <div class="hero-footer">
+
+        <!-- Tagline -->
+        <p class="hero-tagline" aria-label="Páginas e sites rápidos, feitos sob medida, que vendem.">
+          <!--
+            Cada palavra em um span para o stagger de entrada.
+            O overflow hidden é aplicado por JS em .tagline-word.
+          -->
+          <span class="tagline-word">Páginas</span>
+          <span class="tagline-word"> e </span>
+          <span class="tagline-word">sites</span>
+          <span class="tagline-word"> rápidos,</span>
+          <span class="tagline-word"> feitos</span>
+          <span class="tagline-word"> sob</span>
+          <span class="tagline-word"> medida,</span>
+          <span class="tagline-word"> que</span>
+          <span class="tagline-word"> vendem.</span>
+        </p>
+
+        <!-- CTAs -->
+        <div class="hero-ctas">
+          <a
+            href="#orcamento"
+            class="btn-cta-primary"
+            aria-label="Fazer meu orçamento"
+          >
+            Fazer meu orçamento
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a
+            href="#projetos"
+            class="btn-cta-secondary"
+            aria-label="Ver projetos"
+          >
+            Ver projetos
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Indicador de scroll -->
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="scroll-label">Scroll</span>
+        <div class="scroll-track">
+          <div class="scroll-thumb"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ────────────────────────────
+         SEÇÃO 2: MANIFESTO / CONCEITO
+    ──────────────────────────── -->
+    <section id="conceito" aria-labelledby="conceito-titulo">
+      <!-- Brilho radial de fundo -->
+      <div class="conceito-glow" aria-hidden="true"></div>
+
+      <div class="conceito-container">
+        <!-- Texto principal do Manifesto (Centralizado) -->
+        <div class="conceito-body">
+          <h2 id="conceito-titulo" class="conceito-heading">
+            <!-- Acessibilidade: texto integral legível por leitores de tela -->
+            <span class="sr-only">
+              Um site que só é bonito não vende. Eu desenvolvo páginas rápidas, otimizadas e feitas sob medida para aparecer no Google e transformar visitas em clientes.
+            </span>
+            <!-- Renderização visual animada (gerada via conceito.js) -->
+            <span class="conceito-display" aria-hidden="true"></span>
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────────────────────────
+         SEÇÕES PLACEHOLDER (âncoras)
+    ──────────────────────────── -->
+    <!-- ────────────────────────────
+         SEÇÃO 3: PROJETOS
+    ──────────────────────────── -->
+    <section
+      id="projetos"
+      aria-labelledby="projetos-heading"
+      role="region"
+      aria-roledescription="carrossel"
+      aria-label="Projetos"
+    >
+      <!-- Cabeçalho da seção -->
+      <div class="projetos-header">
+        <div class="projetos-header-left">
+          <span class="projetos-tag" aria-hidden="true">(01) PROJETOS</span>
+          <div class="projetos-title-wrap">
+            <h2 id="projetos-heading" class="projetos-title">Projetos no ar.</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palco do Carrossel (Mockup Laptop 3D) -->
+      <div class="projetos-stage-wrapper" data-cursor="drag" tabindex="0" aria-label="Palco interativo de projetos. Arraste ou use as setas do teclado para navegar.">
+        <div class="stage-ambient-glow" aria-hidden="true"></div>
+        <div class="projetos-stage"></div>
+      </div>
+
+      <!-- Informações do Projeto Ativo -->
+      <div class="projetos-info" aria-live="polite">
+        <div class="project-info-left">
+          <span class="project-category"></span>
+          <h3 class="project-name"></h3>
+          <p class="project-desc"></p>
+        </div>
+
+        <div class="projetos-actions">
+          <div class="projetos-status-bar">
+            <span class="projetos-counter" aria-label="Contador de projetos">01 / 04</span>
+            <button
+              class="btn-autoplay-toggle"
+              type="button"
+              aria-label="Pausar rotação automática"
+              aria-pressed="false"
+              data-cursor="grow"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+              </svg>
+            </button>
+          </div>
+
+          <div class="projetos-controls-row">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-view-project"
+              aria-label="Ver projeto"
+              data-cursor="grow"
+            >
+              <span>Ver projeto</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+            <button
+              class="btn-carousel-nav btn-nav-prev"
+              type="button"
+              aria-label="Projeto anterior"
+              data-cursor="grow"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button
+              class="btn-carousel-nav btn-nav-next"
+              type="button"
+              aria-label="Próximo projeto"
+              data-cursor="grow"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Faixa de Miniaturas com barra de progresso -->
+      <div class="projetos-thumbs-wrapper">
+        <div
+          class="projetos-thumbs"
+          role="tablist"
+          aria-label="Miniaturas dos projetos"
+        ></div>
+      </div>
+    </section>
+
+    <!-- ────────────────────────────
+         SEÇÃO 4: ECOSSISTEMA
+    ──────────────────────────── -->
+    <section
+      id="ecossistema"
+      aria-labelledby="ecossistema-heading"
+      role="region"
+      aria-label="Ecossistema de Desenvolvimento Web"
+    >
+      <div class="ecossistema-container">
+        <!-- Grande Painel com Efeito Ribbon Glow Interativo -->
+        <div class="ecossistema-panel">
+          <!-- Canvas WebGL2 do Ribbon Glow (Originkit) -->
+          <canvas id="ecossistema-canvas" class="ecossistema-canvas" aria-hidden="true"></canvas>
+
+          <!-- Topo: Identificador, Título e Descrição -->
+          <div class="ecossistema-top">
+            <span class="ecossistema-tag" aria-hidden="true">(03) ECOSSISTEMA</span>
+            <div class="ecossistema-title-wrap">
+              <h2 id="ecossistema-heading" class="ecossistema-title">
+                Um site é só o começo.
+              </h2>
+            </div>
+            <p class="ecossistema-desc">
+              Cada projeto vai muito além de uma interface bonita. Existe estratégia, tecnologia e intenção por trás de cada detalhe. Da primeira ideia à experiência final, construo soluções digitais pensadas para funcionar.
+            </p>
+          </div>
+
+          <!-- Divisória editorial fina com ponto central -->
+          <div class="ecossistema-divider" aria-hidden="true">
+            <div class="ecossistema-divider-line"></div>
+            <span class="ecossistema-divider-dot"></span>
+          </div>
+
+          <!-- Os Cinco Pilares do Ecossistema -->
+          <div class="ecossistema-cards" role="list">
+            <!-- Pilar 01 -->
+            <div class="ecossistema-card" role="listitem" data-cursor="grow">
+              <div class="ecossistema-card-inner">
+                <span class="ecossistema-card-num" aria-hidden="true">01</span>
+                <h3 class="ecossistema-card-title">Estratégia</h3>
+                <p class="ecossistema-card-desc">
+                  Entender o negócio, o público e os objetivos antes de começar.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pilar 02 -->
+            <div class="ecossistema-card" role="listitem" data-cursor="grow">
+              <div class="ecossistema-card-inner">
+                <span class="ecossistema-card-num" aria-hidden="true">02</span>
+                <h3 class="ecossistema-card-title">Design</h3>
+                <p class="ecossistema-card-desc">
+                  Interfaces exclusivas, construídas para transmitir valor e confiança.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pilar 03 -->
+            <div class="ecossistema-card" role="listitem" data-cursor="grow">
+              <div class="ecossistema-card-inner">
+                <span class="ecossistema-card-num" aria-hidden="true">03</span>
+                <h3 class="ecossistema-card-title">Desenvolvimento</h3>
+                <p class="ecossistema-card-desc">
+                  Sites rápidos, responsivos e desenvolvidos sob medida.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pilar 04 -->
+            <div class="ecossistema-card" role="listitem" data-cursor="grow">
+              <div class="ecossistema-card-inner">
+                <span class="ecossistema-card-num" aria-hidden="true">04</span>
+                <h3 class="ecossistema-card-title">Performance</h3>
+                <p class="ecossistema-card-desc">
+                  SEO, otimização e atenção a cada detalhe técnico.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pilar 05 -->
+            <div class="ecossistema-card" role="listitem" data-cursor="grow">
+              <div class="ecossistema-card-inner">
+                <span class="ecossistema-card-num" aria-hidden="true">05</span>
+                <h3 class="ecossistema-card-title">Conversão</h3>
+                <p class="ecossistema-card-desc">
+                  Experiências digitais pensadas para transformar visitantes em oportunidades.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────────────────────────
+         SEÇÃO: SOBRE MIM
+    ──────────────────────────── -->
+    <section
+      id="sobre"
+      aria-labelledby="sobre-heading"
+      role="region"
+      aria-label="Sobre João Matheus"
+    >
+      <div class="sobre-container">
+        <!-- Palco Central: Efeito 3D (Texto atrás + Foto + Texto vazado na frente + Textos Laterais) -->
+        <div class="sobre-stage">
+          <!-- Camada 1: Texto sólido branco atrás -->
+          <div class="sobre-text-layer sobre-text-back" aria-hidden="true">
+            <span>SOBRE MIM</span>
+          </div>
+
+          <!-- Camada 2: Foto do João Matheus (ancorada na base da seção) -->
+          <div class="sobre-photo-wrapper">
+            <img
+              src="/assets/sobre-matheus.png"
+              alt="João Matheus – Fundador da Scale"
+              class="sobre-photo"
+              loading="lazy"
+              decoding="async"
+              width="680"
+              height="880"
+            />
+          </div>
+
+          <!-- Camada 3: Texto vazado na frente da foto -->
+          <div class="sobre-text-layer sobre-text-front" aria-hidden="true">
+            <span>SOBRE MIM</span>
+          </div>
+
+          <!-- Textos Laterais flanqueando a foto (sem ficar abaixo dela) -->
+          <div class="sobre-col-left">
+            <p class="sobre-p">
+              Fala pessoal! Sou o <strong>JOÃO MATHEUS</strong>, fundador da <strong>SCALE</strong>. Tenho 17 anos, curso ADS no SESI e programo desde os 14, sempre buscando evoluir como dev e como pessoa.
+            </p>
+          </div>
+
+          <div class="sobre-col-right">
+            <p class="sobre-p">
+              Durante muito tempo meu sonho foi o futebol. Os planos mudaram, mas levei para a tecnologia o que aprendi no campo: dedicação, gana de vencer e a busca pela jogada prática e certeira. Sou movido por resolver problemas da forma mais simples e inteligente.
+            </p>
+            <p class="sobre-p sobre-p-sub">
+              Meu foco é usar a criatividade para criar soluções de verdade que ajudem empresas e pessoas a crescerem junto comigo.
+            </p>
+          </div>
+
+          <h2 id="sobre-heading" class="sr-only">Sobre João Matheus</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────────────────────────
+         SEÇÃO FINAL: ORÇAMENTO / VAMOS CONVERSAR
+    ──────────────────────────── -->
+    <section
+      id="orcamento"
+      aria-labelledby="orcamento-heading"
+      role="region"
+      aria-label="Vamos conversar sobre seu projeto"
+    >
+      <!-- Fundo da Página: Predictive Arc (malha interativa WebGL) -->
+      <canvas id="orcamento-bg-canvas" class="orcamento-bg-canvas" aria-hidden="true"></canvas>
+
+      <div class="orcamento-container">
+        <!-- Grande Card de Conversão -->
+        <div class="orcamento-card">
+          <!-- Fundo do Card: Ribbon Glow (WebGL2 com fitas orgânicas fluidas) -->
+          <canvas id="orcamento-card-canvas" class="orcamento-card-canvas" aria-hidden="true"></canvas>
+
+          <div class="orcamento-content">
+            <!-- Título Principal Dominante -->
+            <div class="orcamento-title-wrap">
+              <h2 id="orcamento-heading" class="orcamento-title">
+                Vamos criar algo único?
+              </h2>
+            </div>
+
+            <!-- Texto Complementar -->
+            <p class="orcamento-desc">
+              Tem uma ideia em mente ou precisa de uma solução digital para seu negócio? Me conte o que você está planejando. Vamos conversar sobre como transformar isso em um projeto bem construído.
+            </p>
+
+            <!-- Botões Principais de Conversão -->
+            <div class="orcamento-actions">
+              <!-- BOTÃO 01: Solicitar orçamento -->
+              <a
+                href="https://wa.me/5581987734133?text=Ol%C3%A1%2C%20Matheus!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20o%20meu%20projeto."
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-orcamento-primary"
+                aria-label="Solicitar orçamento"
+                data-cursor="grow"
+              >
+                <span>Solicitar orçamento</span>
+                <span class="arrow" aria-hidden="true">→</span>
+              </a>
+
+              <!-- BOTÃO 02: Conversar pelo WhatsApp -->
+              <a
+                href="https://wa.me/5581987734133?text=Ol%C3%A1%2C%20Matheus!%20Vim%20pelo%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar."
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-orcamento-secondary"
+                aria-label="Conversar pelo WhatsApp"
+                data-cursor="grow"
+              >
+                <!-- Ícone Oficial do WhatsApp -->
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                <span>Conversar pelo WhatsApp</span>
+              </a>
+
+              <!-- BOTÃO 03: Instagram @joaomatheusdev -->
+              <a
+                href="https://instagram.com/joaomatheusdev"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-orcamento-secondary btn-orcamento-instagram"
+                aria-label="Instagram @joaomatheusdev"
+                data-cursor="grow"
+              >
+                <!-- Ícone Oficial do Instagram -->
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                <span>@joaomatheusdev</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Módulo JS principal -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
+

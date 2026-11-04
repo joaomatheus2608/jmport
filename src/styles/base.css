@@ -1,0 +1,151 @@
+/* ==========================================================
+   BASE – Reset, tipografia, utilitários e grão global
+   ========================================================== */
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  /* evita scroll horizontal em qualquer largura */
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+  /* cursor nativo oculto apenas em pointer:fine (desktop) */
+  cursor: none;
+}
+
+/* Mantém cursor nativo em touch */
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
+/* ── Link "pular para conteúdo" (acessibilidade) ── */
+.skip-link {
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--white);
+  color: var(--bg);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  z-index: calc(var(--z-cursor) + 1);
+  /* invisível até receber foco */
+  transform: translateY(-200%);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ── Tipografia ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--white);
+}
+
+p {
+  font-family: 'Inter', sans-serif;
+  color: var(--gray-300);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Utilitários ── */
+
+/* Acessibilidade: oculto visualmente, disponível para leitores de tela */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visível padrão para todos os interativos */
+:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* Remove outline padrão quando não acessado via teclado */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Grão global (pseudo-elemento no body) ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  /* SVG feTurbulence como data URI */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  /* "tremor" do grão */
+  animation: grain-shake 0.8s steps(2) infinite;
+}
+
+@keyframes grain-shake {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-1px, 1px); }
+  50%  { transform: translate(1px, -1px); }
+  75%  { transform: translate(-1px, -1px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Sem animação do grão em reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    animation: none;
+  }
+}
+
+/* ── Seções placeholder (âncoras vazias) ── */
+.section-placeholder {
+  min-height: 100vh;
+  background-color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Scroll lock (menu mobile) ── */
+body.scroll-locked {
+  overflow: hidden;
+}
+

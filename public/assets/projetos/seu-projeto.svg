@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900" style="background:#090909;font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#222222" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#090909" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d3d3d"/>
+      <stop offset="100%" stop-color="#141414"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Glow -->
+  <rect x="0" y="0" width="1440" height="900" fill="url(#centerGlow)"/>
+
+  <!-- Moldura interior pontilhada/editorial -->
+  <rect x="60" y="60" width="1320" height="780" rx="16" fill="transparent" stroke="url(#borderGrad)" stroke-width="2" stroke-dasharray="8 8"/>
+
+  <!-- Linha de topo -->
+  <g transform="translate(100, 110)">
+    <rect x="0" y="0" width="32" height="32" rx="8" fill="#1c1c1c" stroke="#333" stroke-width="1"/>
+    <text x="16" y="21" fill="#fafafa" font-size="14" font-weight="800" text-anchor="middle" font-family="'Inter Tight',sans-serif">JM</text>
+    <text x="48" y="21" fill="#6b6b6b" font-size="12" font-family="'JetBrains Mono',monospace" letter-spacing="2">NOVO PROJETO DISPONÍVEL</text>
+  </g>
+
+  <!-- Conteúdo Central -->
+  <g transform="translate(720, 420)">
+    <!-- Ícone de Plus / Criação -->
+    <circle cx="0" cy="-120" r="44" fill="#141414" stroke="#2a2a2a" stroke-width="2"/>
+    <path d="M-12 -120 L12 -120 M0 -132 L0 -108" stroke="#fafafa" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Título Principal -->
+    <text x="0" y="-10" fill="#fafafa" font-size="64" font-weight="800" text-anchor="middle" font-family="'Inter Tight',sans-serif" letter-spacing="-2">O Seu Próximo Projeto.</text>
+
+    <!-- Subtítulo -->
+    <text x="0" y="44" fill="#8a8a8a" font-size="20" font-weight="400" text-anchor="middle" font-family="'Inter',sans-serif">Rápido, feito sob medida e desenhado para converter visitantes em clientes.</text>
+
+    <!-- Botão Call to Action -->
+    <g transform="translate(0, 110)">
+      <rect x="-140" y="-26" width="280" height="52" rx="26" fill="#fafafa"/>
+      <text x="0" y="6" fill="#050505" font-size="15" font-weight="600" text-anchor="middle" font-family="'Inter',sans-serif">Iniciar meu projeto →</text>
+    </g>
+  </g>
+
+  <!-- Rodapé do Mockup -->
+  <g transform="translate(720, 780)">
+    <text x="0" y="0" fill="#444444" font-size="12" text-anchor="middle" font-family="'JetBrains Mono',monospace" letter-spacing="3">RESERVE SUA VAGA NO CALENDÁRIO</text>
+  </g>
+</svg>
+

@@ -1,0 +1,346 @@
+/* ==========================================================
+   ECOSSISTEMA – Estilos da Seção Ecossistema
+   Efeito Ribbon Glow (Originkit WebGL2) no fundo do painel,
+   interativo com o cursor do mouse, com inversão de cores
+   nos cards (preto vira branco / branco vira preto) no hover.
+   ========================================================== */
+
+#ecossistema {
+  position: relative;
+  width: 100%;
+  background-color: var(--bg);
+  border-top: 1px solid var(--gray-800);
+  padding: 14vh 0 12vh 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Container principal ── */
+.ecossistema-container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 48px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Grande Painel com Fundo Ribbon Glow (WebGL2) ── */
+.ecossistema-panel {
+  position: relative;
+  width: 100%;
+  background-color: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 24px;
+  padding: clamp(36px, 5.5vw, 72px) clamp(28px, 4.5vw, 64px);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.8),
+    0 32px 80px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Canvas WebGL2 Ribbon Glow (Fundo interativo) */
+.ecossistema-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Parte Superior ── */
+.ecossistema-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Identificador superior: "(03) ECOSSISTEMA" */
+.ecossistema-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-mono-base); /* 12px */
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  margin-bottom: clamp(16px, 2.5vh, 24px);
+  display: inline-block;
+  user-select: none;
+}
+
+/* Título em destaque editorial */
+.ecossistema-title-wrap {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.ecossistema-title {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5.5vw, 5.75rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: #FFFFFF;
+  margin: 0;
+  text-align: left;
+  text-wrap: balance;
+  max-width: 14ch;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* Descrição com largura controlada */
+.ecossistema-desc {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1rem, 1.2vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.65;
+  color: #C0C0C0;
+  max-width: 62ch;
+  margin-top: clamp(20px, 3vh, 32px);
+  margin-bottom: 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+/* ── Divisória Horizontal com Ponto Central ── */
+.ecossistema-divider {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 1px;
+  margin: clamp(40px, 6vh, 64px) 0 clamp(36px, 5vh, 52px) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ecossistema-divider-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+  transform-origin: center center;
+}
+
+.ecossistema-divider-dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.95), 0 0 3px rgba(255, 255, 255, 1);
+  z-index: 2;
+  transform-origin: center center;
+}
+
+/* ── Grid dos Cinco Pilares ── */
+.ecossistema-cards {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Card individual (Estado normal: Fundo escuro translúcido com blur) */
+.ecossistema-card {
+  position: relative;
+  background-color: rgba(8, 8, 12, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  padding: clamp(24px, 2.5vw, 32px) clamp(18px, 1.8vw, 24px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: default;
+  transition:
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   1. INVERSÃO DE CORES NO HOVER:
+   O que é preto vira branco e o que é branco vira preto.
+   ═══════════════════════════════════════════════════════════ */
+.ecossistema-card:hover {
+  background-color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+  transform: translateY(-6px);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.75),
+    0 0 35px rgba(255, 255, 255, 0.3);
+}
+
+.ecossistema-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Numeração: cinza no repouso, escura no hover */
+.ecossistema-card-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--gray-400);
+  margin-bottom: clamp(20px, 3.5vh, 36px);
+  display: inline-block;
+  user-select: none;
+  transition: color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ecossistema-card:hover .ecossistema-card-num {
+  color: #555555 !important;
+}
+
+/* Título: branco no repouso, preto no hover */
+.ecossistema-card-title {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.15rem, 1.35vw, 1.35rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin: 0 0 10px 0;
+  transition:
+    color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ecossistema-card:hover .ecossistema-card-title {
+  color: #050505 !important; /* Branco vira Preto */
+  transform: translateX(3px);
+}
+
+/* Descrição: cinza claro no repouso, cinza escuro no hover */
+.ecossistema-card-desc {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #A0A0A0;
+  margin: 0;
+  margin-top: auto;
+  transition: color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ecossistema-card:hover .ecossistema-card-desc {
+  color: #1a1a1a !important; /* Leitura perfeita de alto contraste no fundo branco */
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVIDADE
+═══════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .ecossistema-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .ecossistema-card:nth-child(4),
+  .ecossistema-card:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ecossistema-container {
+    padding: 0 32px;
+  }
+
+  .ecossistema-title {
+    max-width: 16ch;
+  }
+}
+
+@media (max-width: 860px) {
+  .ecossistema-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .ecossistema-card:nth-child(5) {
+    grid-column: span 2;
+  }
+
+  .ecossistema-card {
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 768px) {
+  #ecossistema {
+    padding: 10vh 0 8vh 0;
+  }
+
+  .ecossistema-container {
+    padding: 0 20px;
+  }
+
+  .ecossistema-panel {
+    border-radius: 18px;
+    padding: 32px 20px;
+  }
+
+  .ecossistema-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+    line-height: 1.02;
+    max-width: 100%;
+  }
+
+  .ecossistema-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 100%;
+  }
+
+  .ecossistema-divider {
+    margin: 36px 0 28px 0;
+  }
+
+  .ecossistema-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ecossistema-card:nth-child(5) {
+    grid-column: span 1;
+  }
+
+  .ecossistema-card {
+    min-height: auto;
+    padding: 24px 20px;
+  }
+
+  .ecossistema-card-num {
+    margin-bottom: 16px;
+  }
+}
+
+/* ── Prevenção para Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .ecossistema-card,
+  .ecossistema-card-title,
+  .ecossistema-card-num,
+  .ecossistema-card-desc {
+    transition: none !important;
+    transform: none !important;
+  }
+}

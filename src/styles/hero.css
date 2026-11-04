@@ -1,0 +1,930 @@
+/* ==========================================================
+   HERO – Estilos da seção hero
+   ========================================================== */
+
+/* ── Seção principal ── */
+#hero {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
+  background-color: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Canvas do campo de caracteres (camada 0) ── */
+.ascii-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+}
+
+/* ── Grade técnica (camada 1) ── */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-grid);
+  pointer-events: none;
+  /* grade de linhas finas brancas */
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 80px 80px;
+  /* máscara radial para esmaecer nas bordas */
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
+          mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
+}
+
+/* ── HEADER fixo (100% transparente no hero, comprime em cápsula no scroll) ── */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: var(--space-7) var(--space-12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent !important;
+  border-bottom: none !important;
+  -webkit-backdrop-filter: none !important;
+          backdrop-filter: none !important;
+  pointer-events: none;
+  transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header-capsule {
+  width: 100%;
+  max-width: 1600px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: auto;
+  padding: 0;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  transition:
+    max-width 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    gap 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Estado Comprimido ao sair do Hero: cápsula flutuante centralizada */
+.site-header.is-scrolled {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.site-header.is-scrolled .header-capsule {
+  max-width: 215px;
+  padding: 6px 14px 6px 10px;
+  gap: 12px;
+  justify-content: center;
+  background-color: rgba(12, 12, 12, 0.82);
+  -webkit-backdrop-filter: blur(24px);
+          backdrop-filter: blur(24px);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.site-header.is-scrolled .header-capsule:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+/* ── Logo sem contorno (símbolo limpo) ── */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  flex-shrink: 0;
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out),
+    width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.site-header.is-scrolled .logo {
+  width: 32px;
+  height: 32px;
+}
+
+.logo:hover,
+.logo:focus-visible {
+  opacity: 0.8;
+  transform: scale(1.06);
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Inverte as cores e usa blend mode para eliminar o fundo quadrado preto */
+  filter: invert(1);
+  mix-blend-mode: screen;
+  display: block;
+}
+
+/* Navegação central (recolhe e some suavemente ao sair do Hero) */
+.header-nav {
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  opacity: 1;
+  transform: scale(1);
+  overflow: hidden;
+  transition:
+    max-width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.site-header.is-scrolled .header-nav {
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.85);
+  margin: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  list-style: none;
+}
+
+.nav-links a {
+  position: relative;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-mono-base);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-300);
+  transition: color var(--dur-base) var(--ease-out);
+  padding-bottom: 2px;
+  white-space: nowrap;
+}
+
+/* Sublinhado que cresce da esquerda */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--white);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: var(--white);
+}
+.nav-links a:hover::after,
+.nav-links a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Botão "ORÇAMENTO" no header */
+.btn-header-orcamento {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-mono-base);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  border: 1px solid var(--gray-600);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  cursor: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition:
+    padding 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    font-size 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.4s var(--ease-out),
+    border-color     0.4s var(--ease-out),
+    color            0.4s var(--ease-out);
+}
+.btn-header-orcamento:hover,
+.btn-header-orcamento:focus-visible {
+  background-color: var(--white);
+  border-color: var(--white);
+  color: var(--bg);
+}
+
+.site-header.is-scrolled .btn-header-orcamento {
+  padding: 6px 14px;
+  font-size: 11px;
+  border-color: rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Barra de microtextos (pertence ao hero, rola com ele) ── */
+.micro-bar {
+  position: absolute;
+  top: calc(var(--space-7) + 44px + var(--space-3));
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0 var(--space-12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.micro-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-mono-sm);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  white-space: nowrap;
+}
+
+.micro-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Ponto de status verde – mas usamos branco conforme spec */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--white);
+  animation: pulse-dot 2s var(--ease-in-out) infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.7); }
+}
+
+/* ── Nome gigante – wrapper ── */
+.hero-name-wrapper {
+  position: absolute;
+  /* posicionado na metade inferior-central: ~30% do topo = começa em 28% */
+  top: 28%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-name);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 var(--space-4);
+  /* desabilita pointer events para o spotlight funcionar */
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Container das camadas de nome (base + spotlight empilhados) */
+.hero-name-stack {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  /* overflow visible para o spotlight (absolute) não ser clipped */
+}
+
+/* Linha do nome (desktop: uma linha; mobile: múltiplas) */
+.hero-name-line {
+  display: block;
+  overflow: hidden; /* para animação de entrada (clip) */
+  line-height: 0.82;
+}
+
+/* Texto do nome – camada base */
+.hero-name-base,
+.hero-name-spotlight {
+  display: block;
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  word-spacing: -0.08em;
+  /* Impede que o texto cause overflow horizontal */
+  white-space: nowrap;
+  /* Tamanho fluido: de 4rem a 20rem, preferindo 13.5vw */
+  font-size: clamp(4rem, 13.5vw, 20rem);
+}
+
+.hero-name-base {
+  color: var(--gray-800);
+  -webkit-text-stroke: 1px var(--gray-700);
+}
+
+/* Camada spotlight: sobreposta, visível apenas no raio do mouse */
+.hero-name-spotlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: var(--white);
+  /* --mx e --my atualizados via JS */
+  --mx: 50%;
+  --my: 50%;
+  -webkit-mask-image: radial-gradient(circle 320px at var(--mx) var(--my), #000 0%, transparent 100%);
+          mask-image: radial-gradient(circle 320px at var(--mx) var(--my), #000 0%, transparent 100%);
+}
+
+/* ── Mobile: duas linhas ── */
+@media (max-width: 768px) {
+  .hero-name-base,
+  .hero-name-spotlight {
+    font-size: 22vw;
+    white-space: normal;
+    word-break: keep-all;
+  }
+
+  .hero-name-wrapper {
+    top: 24%;
+    justify-content: flex-start;
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+}
+
+/* ── Imagem recortada ── */
+.hero-cutout {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 82%;
+  z-index: var(--z-cutout);
+  pointer-events: none;
+  /* Ajuste visual: preto e branco, levemente mais escuro */
+  filter: grayscale(1) contrast(1.1) brightness(0.95);
+  /* Dissolve na base */
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 22%);
+          mask-image: linear-gradient(to top, transparent 0%, #000 22%);
+  /* Exibido só se carregado – ver hero.js */
+  object-fit: contain;
+  object-position: bottom right;
+  /* impede que empurre a largura */
+  max-width: 50%;
+}
+
+/* ── Rodapé do hero: tagline + CTAs ── */
+.hero-footer {
+  position: absolute;
+  bottom: 56px;
+  left: 0;
+  right: 0;
+  z-index: var(--z-ui);
+  padding: 0 var(--space-12);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-8);
+  /* Garante que fique acima do safe-area no iOS mantendo bottom 56px */
+  padding-bottom: max(56px, env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+
+.hero-footer > * {
+  pointer-events: auto;
+}
+
+.hero-tagline {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.35rem, 2.2vw, 2.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  max-width: min(30vw, 460px);
+  text-wrap: balance;
+  position: relative;
+  z-index: calc(var(--z-cutout) + 5);
+}
+
+.hero-ctas {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+/* CTA primário: pílula branca */
+.btn-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 18px 32px;
+  background-color: var(--white);
+  color: var(--bg);
+  border: 1px solid var(--white);
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  cursor: none;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color     var(--dur-base) var(--ease-out),
+    color            var(--dur-base) var(--ease-out);
+  white-space: nowrap;
+}
+
+.btn-cta-primary .arrow {
+  display: inline-block;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.btn-cta-primary:hover .arrow,
+.btn-cta-primary:focus-visible .arrow {
+  transform: translateX(6px);
+}
+
+/* CTA secundário: pílula transparente */
+.btn-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 18px 32px;
+  background-color: transparent;
+  color: var(--white);
+  border: 1px solid var(--gray-600);
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  cursor: none;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color     var(--dur-base) var(--ease-out);
+  white-space: nowrap;
+}
+
+.btn-cta-secondary:hover,
+.btn-cta-secondary:focus-visible {
+  background-color: var(--gray-900);
+  border-color: var(--white);
+}
+
+/* ── Indicador de scroll (visível sobre a foto) ── */
+.scroll-indicator {
+  position: absolute;
+  bottom: var(--space-8);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: calc(var(--z-cutout) + 10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+
+.scroll-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-mono-xs);
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.scroll-track {
+  position: relative;
+  width: 1px;
+  height: 56px;
+  background-color: rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+}
+
+.scroll-thumb {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  width: 1px;
+  height: 16px;
+  background-color: var(--white);
+  animation: scroll-run 2s ease-in-out infinite;
+}
+
+@keyframes scroll-run {
+  0%   { top: -16px; }
+  100% { top: 56px; }
+}
+
+/* ── Menu hambúrguer (mobile) ── */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: none;
+  padding: var(--space-2);
+  z-index: calc(var(--z-overlay) + 1);
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 24px;
+  height: 1px;
+  background-color: var(--white);
+  transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base);
+  transform-origin: center;
+}
+
+/* Estado aberto do hambúrguer (X) */
+.hamburger-btn.is-open span:nth-child(1) {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.hamburger-btn.is-open span:nth-child(2) {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+
+/* ── Overlay mobile ── */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg);
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-12) var(--space-5);
+  /* oculto por padrão */
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mobile-menu.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobile-nav-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mobile-nav-links a {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 12vw;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  text-transform: uppercase;
+  opacity: 0; /* animado via GSAP */
+  display: block;
+}
+
+/* ── Desktop/Mobile layout de nome ── */
+
+/* Desktop: mostra a linha única, oculta as duas linhas */
+.hero-name-lines-desktop {
+  display: block;
+}
+.hero-name-lines-mobile {
+  display: none;
+}
+
+/* .letter: span inline de cada letra para stagger GSAP */
+.hero-name-base .letter,
+.hero-name-spotlight .letter {
+  display: inline-block;
+  /* herda tudo do pai */
+}
+
+/* Tagline: cada palavra inline */
+.tagline-word {
+  display: inline;
+}
+
+/* ── Responsividade ── */
+@media (max-width: 1024px) {
+  .site-header {
+    padding: var(--space-6) var(--space-8);
+  }
+  .micro-bar {
+    padding: 0 var(--space-8);
+  }
+  .hero-footer {
+    padding: 0 var(--space-8);
+    bottom: 56px;
+    padding-bottom: max(56px, env(safe-area-inset-bottom));
+  }
+  /* Redução para não encostar na foto entre 768px e 1024px */
+  .hero-tagline {
+    font-size: clamp(1.25rem, 2.2vw, 2rem);
+    max-width: min(28vw, 360px);
+  }
+  .hero-photo-img {
+    height: 72svh;
+    max-height: 680px;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header {
+    padding: var(--space-5) var(--space-5);
+  }
+  .micro-bar {
+    padding: 0 var(--space-5);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    top: calc(var(--space-5) + 44px + var(--space-2));
+  }
+
+  /* Header mobile */
+  .site-header.is-scrolled {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .site-header.is-scrolled .header-capsule {
+    max-width: 190px;
+  }
+
+  .header-nav,
+  .nav-links {
+    display: none;
+  }
+  .btn-header-orcamento {
+    display: none;
+  }
+  .site-header.is-scrolled .btn-header-orcamento {
+    display: inline-flex;
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+  .hamburger-btn {
+    display: flex;
+    position: absolute;
+    right: var(--space-5);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Footer empilhado */
+  .hero-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    bottom: 0;
+    padding: 0 var(--space-5);
+    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+    gap: var(--space-4);
+  }
+  .hero-tagline {
+    max-width: 100%;
+    font-size: clamp(1.2rem, 4.5vw, 1.45rem);
+  }
+  .hero-ctas {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-2);
+  }
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+
+  /* SCROLL visível sobre a foto no mobile */
+  .scroll-indicator {
+    display: flex;
+    bottom: 160px;
+    z-index: 25;
+  }
+
+  .hero-photo-img {
+    height: 52svh;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero-tagline {
+    font-size: 1.15rem;
+  }
+  .scroll-indicator {
+    bottom: 150px;
+  }
+}
+
+/* Reduced-motion: remove animações específicas do hero */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-thumb {
+    animation: none;
+    top: 20px;
+  }
+  .status-dot {
+    animation: none;
+  }
+}
+
+/* ══════════════════════════════════════════
+   MARQUEE DO NOME & SPOTLIGHT
+══════════════════════════════════════════ */
+
+/* Container externo: faixa posicionada no centro-vertical superior do hero */
+.hero-marquee-wrapper {
+  position: absolute;
+  top: 32%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: var(--z-name);
+  width: 100%;
+  pointer-events: auto;
+  user-select: none;
+  overflow: hidden;
+  /* Máscara: esmaecimento suave das bordas */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+}
+
+.hero-marquee-layer {
+  width: 100%;
+}
+
+/* Camada BASE */
+.marquee-layer-base {
+  position: relative;
+}
+
+/* Camada SPOTLIGHT: container FIXO sobreposto, que não se move com o marquee */
+.marquee-layer-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --mx: 50%;
+  --my: 50%;
+  -webkit-mask-image: radial-gradient(
+    circle 320px at var(--mx) var(--my),
+    #000 0%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 320px at var(--mx) var(--my),
+    #000 0%,
+    transparent 100%
+  );
+}
+
+/* Track interno que se move via GSAP */
+.hero-marquee-track {
+  display: flex;
+  align-items: baseline;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Bloco de conteúdo duplicado para loop 0 a -50% perfeitamente contínuo */
+.hero-marquee-content {
+  display: flex;
+  align-items: baseline;
+  flex-shrink: 0;
+}
+
+/* Texto de cada item */
+.hero-marquee-item {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(4.5rem, 13vw, 17rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 0.15em;
+}
+
+/* Camada BASE: preenchimento var(--gray-700) com stroke fino em gray-600 */
+.marquee-layer-base .hero-marquee-item {
+  color: var(--gray-700);
+  -webkit-text-stroke: 1px var(--gray-600);
+}
+
+/* Camada SPOTLIGHT: branca, sem stroke */
+.marquee-layer-spotlight .hero-marquee-item {
+  color: var(--white);
+  -webkit-text-stroke: 0px transparent;
+}
+
+/* Separador entre as repetições: ponto (•) em gray-600 com 0.3em de cada lado */
+.hero-marquee-sep {
+  font-size: clamp(1.8rem, 4vw, 5rem);
+  color: var(--gray-600);
+  line-height: 1;
+  padding: 0 0.3em;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* Reduced-motion: para o marquee e mostra centralizado */
+@media (prefers-reduced-motion: reduce) {
+  .hero-marquee-track {
+    transform: none !important;
+    justify-content: center;
+    width: 100%;
+  }
+  .hero-marquee-content:last-child {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hero-marquee-item {
+    font-size: 19vw;
+  }
+  .hero-marquee-sep {
+    font-size: 7vw;
+  }
+  .hero-marquee-wrapper {
+    top: 28%;
+  }
+}
+
+/* ══════════════════════════════════════════
+   FOTO CENTRADA NO HERO
+══════════════════════════════════════════ */
+
+.hero-photo-center {
+  position: absolute;
+  /* centralizada horizontalmente, ancorada na base */
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-cutout);
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hero-photo-img {
+  /* Altura proporcional ao hero */
+  height: 80svh;
+  max-height: 800px;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+  /* Remove o fundo branco via mix-blend-mode */
+  mix-blend-mode: lighten;
+  /* Tratamento visual monocromático */
+  filter: grayscale(1) contrast(1.05) brightness(0.9);
+  /* Dissolve nos pés */
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 18%);
+          mask-image: linear-gradient(to top, transparent 0%, #000 18%);
+}
+
+/* Mobile: foto menor */
+@media (max-width: 768px) {
+  .hero-photo-img {
+    height: 55svh;
+  }
+}
+

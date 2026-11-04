@@ -1,0 +1,150 @@
+/* ==========================================================
+   CONCEITO – Estilos da Seção Manifesto / Conceito
+   Estética monocromática, editorial, minimalista e 100% centralizada.
+   ========================================================== */
+
+#conceito {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 600px;
+  background-color: var(--bg);
+  border-top: 1px solid var(--gray-800);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ── Brilho radial de fundo (Parallax suave) ── */
+.conceito-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
+  max-width: 1300px;
+  max-height: 1300px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 255, 255, 0.035) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* ── Container interno perfeitamente centralizado ── */
+.conceito-container {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+/* ── Bloco central de texto do Manifesto ── */
+.conceito-body {
+  width: 100%;
+  max-width: 1350px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.conceito-heading {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.2rem, 5.2vw, 5.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Container do texto que é visto (com spans) */
+.conceito-display {
+  display: inline;
+}
+
+/* Cada palavra individual */
+.conceito-display .w {
+  display: inline-block;
+  opacity: 0.14; /* Estado inicial: acende para 1 no scrub */
+  will-change: opacity;
+  transition: opacity 0.05s linear;
+}
+
+/* Wrappers para as palavras de destaque */
+.highlight-wrap {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Sublinhado fino animado */
+.highlight-wrap .u-line {
+  position: absolute;
+  left: 0;
+  bottom: -0.04em;
+  width: 100%;
+  height: 2px;
+  background-color: var(--white);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ── Responsividade ── */
+@media (max-width: 1024px) {
+  .conceito-container {
+    padding: 0 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  #conceito {
+    min-height: 100svh;
+  }
+
+  .conceito-container {
+    padding: 0 20px;
+  }
+
+  .conceito-heading {
+    font-size: clamp(1.75rem, 8vw, 2.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+}
+
+/* Telas ultra compactas como 360x640 */
+@media (max-height: 700px) and (max-width: 768px) {
+  .conceito-heading {
+    font-size: clamp(1.5rem, 7vw, 2.2rem);
+    line-height: 1.12;
+  }
+}
+
+/* ── Acessibilidade: prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .conceito-display .w {
+    opacity: 1 !important;
+  }
+  .highlight-wrap .u-line {
+    transform: scaleX(1) !important;
+  }
+  .conceito-glow {
+    transform: translate(-50%, -50%) !important;
+  }
+}

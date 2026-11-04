@@ -1,0 +1,99 @@
+/* ==========================================================
+   SPLASH SCREEN / PRELOADER COM EFEITO DE DOWNLOAD
+   Silhueta da logo carregando/preenchendo de baixo para cima
+   com barra de progresso linear e porcentagem digital.
+   ========================================================== */
+
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background-color: #050505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: all;
+  will-change: transform, opacity;
+  overflow: hidden;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+}
+
+/* Container da Logo com Efeito de Preenchimento */
+.splash-logo-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+.splash-logo-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Inverte as cores para logotipo branco perfeito em fundo escuro */
+  filter: invert(1);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Logo de fundo (silhueta tênue) */
+.splash-logo-bg {
+  opacity: 0.16;
+}
+
+/* Logo frontal (preenchimento progressivo de baixo para cima) */
+.splash-logo-fill {
+  clip-path: inset(100% 0 0 0);
+  opacity: 1;
+  filter: invert(1) drop-shadow(0 0 20px rgba(255, 255, 255, 0.45));
+}
+
+/* Linha de progresso minimalista */
+.splash-progress-track {
+  width: 130px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.splash-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #FFFFFF;
+  box-shadow: 0 0 10px #FFFFFF;
+  border-radius: 999px;
+}
+
+/* Metadados: Status e Porcentagem */
+.splash-meta {
+  width: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7A7A7A;
+}
+
+.splash-percent {
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
