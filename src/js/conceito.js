@@ -109,8 +109,8 @@ export function initConceito() {
       },
     });
 
-    // 1. Revelação das palavras (ocupa 0% a 78% da timeline)
-    const wordsDuration = 0.78;
+    // 1. Revelação das palavras (ocupa 0% a 44% da timeline)
+    const wordsDuration = 0.44;
     const wordStep = wordsDuration / words.length;
 
     words.forEach((word, index) => {
@@ -118,46 +118,136 @@ export function initConceito() {
         word,
         {
           opacity: 1,
-          duration: 0.08,
+          duration: 0.06,
           ease: 'none',
         },
         index * wordStep
       );
     });
 
-    // 2. Sublinhados nas palavras de destaque (78% a 95% da timeline)
+    // 2. Sublinhados nas palavras de destaque (36% a 48% da timeline)
     tl.to(
       underlines,
       {
         scaleX: 1,
-        duration: 0.17,
-        stagger: 0.06,
+        duration: 0.12,
+        stagger: 0.04,
         ease: 'power2.out',
       },
-      0.78
+      0.36
     );
 
-    // 3. Parallax leve no brilho de fundo durante todo o percurso (de -10% a 10%)
+    // 3. Parallax sutil no brilho radial de fundo durante a leitura
     if (glow) {
       tl.fromTo(
         glow,
-        { yPercent: -10 },
-        { yPercent: 10, ease: 'none', duration: 1 },
+        { yPercent: -8 },
+        { yPercent: 8, ease: 'none', duration: 0.52 },
         0
+      );
+    }
+
+    // 4. EFEITO TÚNEL 3D / MERGULHO NA TELA COM DISTORÇÃO (55% a 100%)
+    const midIndex = Math.floor(words.length / 2);
+
+    words.forEach((word, index) => {
+      const relPos = (index - midIndex) / midIndex; // -1 (esquerda) a +1 (direita)
+      const isLeft = relPos < 0;
+      const xDist = (isLeft ? -1 : 1) * (window.innerWidth * (0.65 + Math.abs(relPos) * 0.75));
+      const yDist = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.45 + (index % 4) * 0.25));
+      const rotZ = (isLeft ? -1 : 1) * (18 + Math.abs(index - midIndex) * 2.8);
+      const rotY = (isLeft ? -1 : 1) * 35;
+
+      tl.to(
+        word,
+        {
+          x: xDist,
+          y: yDist,
+          z: 750 + Math.abs(index - midIndex) * 35,
+          scale: 9 + Math.abs(relPos) * 4,
+          rotationZ: rotZ,
+          rotationY: rotY,
+          filter: 'blur(22px)',
+          opacity: 0,
+          duration: 0.42,
+          ease: 'power2.in',
+        },
+        0.55 + Math.abs(relPos) * 0.04
+      );
+    });
+
+    // Sublinhados explodem e desvanecem
+    tl.to(
+      underlines,
+      {
+        scaleX: 4,
+        opacity: 0,
+        filter: 'blur(12px)',
+        duration: 0.35,
+        ease: 'power2.in',
+      },
+      0.56
+    );
+
+    // Glow de fundo expande como um portal dimensional
+    if (glow) {
+      tl.to(
+        glow,
+        {
+          scale: 5.5,
+          opacity: 0,
+          duration: 0.42,
+          ease: 'power2.in',
+        },
+        0.56
+      );
+    }
+
+    // Container do texto expande e desvanece
+    tl.to(
+      '.conceito-body',
+      {
+        scale: 4,
+        filter: 'blur(18px)',
+        opacity: 0,
+        duration: 0.42,
+        ease: 'power2.in',
+      },
+      0.55
+    );
+
+    // A 3ª seção (#projetos) emerge do fundo do túnel
+    const projetosSection = document.getElementById('projetos');
+    if (projetosSection) {
+      tl.fromTo(
+        projetosSection,
+        {
+          scale: 0.8,
+          opacity: 0,
+          filter: 'blur(14px)',
+        },
+        {
+          scale: 1,
+          opacity: 1,
+          filter: 'blur(0px)',
+          duration: 0.38,
+          ease: 'power2.out',
+        },
+        0.62
       );
     }
 
     return tl;
   }
 
-  // Desktop (> 768px): end "+=160%"
+  // Desktop (> 768px): end "+=240%" para leitura confortável e mergulho imersivo
   mm.add('(min-width: 769px)', () => {
-    setupAnimation('+=160%');
+    setupAnimation('+=240%');
   });
 
-  // Mobile (<= 768px): end "+=130%"
+  // Mobile (<= 768px): end "+=180%"
   mm.add('(max-width: 768px)', () => {
-    setupAnimation('+=130%');
+    setupAnimation('+=180%');
   });
 
   // Recalcula o ScrollTrigger após o carregamento completo das fontes

@@ -15,9 +15,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
 }
 
-/* ── Brilho radial de fundo (Parallax suave) ── */
+/* ── Brilho radial de fundo (Parallax suave e expansão dimensional) ── */
 .conceito-glow {
   position: absolute;
   top: 50%;
@@ -29,15 +31,15 @@
   transform: translate(-50%, -50%);
   background: radial-gradient(
     circle closest-side,
-    rgba(255, 255, 255, 0.035) 0%,
+    rgba(255, 255, 255, 0.045) 0%,
     transparent 100%
   );
   pointer-events: none;
   z-index: 1;
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
-/* ── Container interno perfeitamente centralizado ── */
+/* ── Container interno com suporte 3D ── */
 .conceito-container {
   position: relative;
   width: 100%;
@@ -50,6 +52,7 @@
   justify-content: center;
   align-items: center;
   z-index: 2;
+  transform-style: preserve-3d;
 }
 
 /* ── Bloco central de texto do Manifesto ── */
@@ -58,6 +61,8 @@
   max-width: 1350px;
   margin: 0 auto;
   text-align: center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
 }
 
 .conceito-heading {
@@ -69,19 +74,23 @@
   color: var(--white);
   text-align: center;
   text-wrap: balance;
+  transform-style: preserve-3d;
 }
 
 /* Container do texto que é visto (com spans) */
 .conceito-display {
   display: inline;
+  transform-style: preserve-3d;
 }
 
-/* Cada palavra individual */
+/* Cada palavra individual com suporte a distorção 3D */
 .conceito-display .w {
   display: inline-block;
   opacity: 0.14; /* Estado inicial: acende para 1 no scrub */
-  will-change: opacity;
+  will-change: transform, opacity, filter;
   transition: opacity 0.05s linear;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
 }
 
 /* Wrappers para as palavras de destaque */

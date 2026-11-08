@@ -309,13 +309,12 @@
          SEÇÕES PLACEHOLDER (âncoras)
     ──────────────────────────── -->
     <!-- ────────────────────────────
-         SEÇÃO 3: PROJETOS
+         SEÇÃO 3: PROJETOS (MARQUEE INFINITO)
     ──────────────────────────── -->
     <section
       id="projetos"
       aria-labelledby="projetos-heading"
       role="region"
-      aria-roledescription="carrossel"
       aria-label="Projetos"
     >
       <!-- Cabeçalho da seção -->
@@ -328,80 +327,15 @@
         </div>
       </div>
 
-      <!-- Palco do Carrossel (Mockup Laptop 3D) -->
-      <div class="projetos-stage-wrapper" data-cursor="drag" tabindex="0" aria-label="Palco interativo de projetos. Arraste ou use as setas do teclado para navegar.">
-        <div class="stage-ambient-glow" aria-hidden="true"></div>
-        <div class="projetos-stage"></div>
-      </div>
-
-      <!-- Informações do Projeto Ativo -->
-      <div class="projetos-info" aria-live="polite">
-        <div class="project-info-left">
-          <span class="project-category"></span>
-          <h3 class="project-name"></h3>
-          <p class="project-desc"></p>
+      <!-- Marquee contínuo de projetos com desaceleração no hover e links diretos -->
+      <div
+        class="projetos-marquee-container"
+        tabindex="0"
+        aria-label="Carrossel contínuo de projetos. Passe o mouse para desacelerar ou clique para abrir o projeto."
+      >
+        <div class="projetos-marquee-track" id="projetos-track">
+          <!-- Cards gerados dinamicamente via projetos.js -->
         </div>
-
-        <div class="projetos-actions">
-          <div class="projetos-status-bar">
-            <span class="projetos-counter" aria-label="Contador de projetos">01 / 04</span>
-            <button
-              class="btn-autoplay-toggle"
-              type="button"
-              aria-label="Pausar rotação automática"
-              aria-pressed="false"
-              data-cursor="grow"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="6" y="4" width="4" height="16"></rect>
-                <rect x="14" y="4" width="4" height="16"></rect>
-              </svg>
-            </button>
-          </div>
-
-          <div class="projetos-controls-row">
-            <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn-view-project"
-              aria-label="Ver projeto"
-              data-cursor="grow"
-            >
-              <span>Ver projeto</span>
-              <span class="arrow" aria-hidden="true">→</span>
-            </a>
-            <button
-              class="btn-carousel-nav btn-nav-prev"
-              type="button"
-              aria-label="Projeto anterior"
-              data-cursor="grow"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <button
-              class="btn-carousel-nav btn-nav-next"
-              type="button"
-              aria-label="Próximo projeto"
-              data-cursor="grow"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Faixa de Miniaturas com barra de progresso -->
-      <div class="projetos-thumbs-wrapper">
-        <div
-          class="projetos-thumbs"
-          role="tablist"
-          aria-label="Miniaturas dos projetos"
-        ></div>
       </div>
     </section>
 
