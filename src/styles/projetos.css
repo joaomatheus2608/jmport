@@ -14,12 +14,14 @@
   width: 100%;
   height: 100%;
   background: transparent;
-  padding: clamp(8px, 1.5vh, 20px) 0;
+  /* 30px do cabeçalho (header ~72px) + 30px do fundo */
+  padding: 30px 0 30px 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: clamp(10px, 1.6vh, 18px);
   z-index: 1;
   opacity: 0;
   transform: scale(0.92);
@@ -41,40 +43,12 @@
   }
 }
 
-/* ── Cabeçalho da seção (Centralizado e compacto) ── */
-.projetos-header {
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-bottom: clamp(8px, 1.4vh, 18px);
-  z-index: 2;
-}
-
-.projetos-header-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.projetos-title-wrap {
-  overflow: hidden;
-}
-
+/* ── Cabeçalho oculto (acessibilidade apenas) ── */
+.projetos-header,
+.projetos-header-left,
+.projetos-title-wrap,
 .projetos-title {
-  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.6rem, 2.8vw, 2.8rem);
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-  color: var(--white);
-  margin: 0;
-  text-align: center;
+  display: none;
 }
 
 /* ═══════════════════════════════════════════════
@@ -85,12 +59,14 @@
   width: 100%;
   overflow: hidden;
   user-select: none;
-  padding: clamp(3px, 0.6vh, 6px) 0;
+  /* Cada marquee ocupa metade da altura disponível, descontando gaps e padding */
+  height: calc((100svh - 30px - 30px - 18px) / 2);
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   /* Máscara com desvanecimento lateral suave */
-  mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
   cursor: grab;
 }
 
@@ -101,17 +77,19 @@
 .projetos-marquee-track {
   display: flex;
   align-items: center;
-  gap: clamp(12px, 1.8vw, 20px);
+  gap: clamp(14px, 2vw, 22px);
   width: max-content;
+  height: 100%;
   will-change: transform;
 }
 
-/* ── Card Individual de Projeto (Redimensionado para caber em 100vh) ── */
+/* ── Card Individual: ocupa toda a altura do marquee ── */
 .projeto-marquee-card {
   position: relative;
   display: block;
   text-decoration: none;
-  width: clamp(230px, 24vw, 360px);
+  /* Largura automática mantendo aspecto 16/9 */
+  height: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 14px;
   overflow: hidden;
@@ -205,22 +183,13 @@
    RESPONSIVIDADE (Tablets e Smartphones)
 ═══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .projetos-header {
-    padding: 0 20px;
-    margin-bottom: 6px;
-  }
-
-  .projetos-title {
-    font-size: 1.45rem;
-  }
-
-  .projeto-marquee-card {
-    width: clamp(200px, 52vw, 260px);
-    border-radius: 10px;
+  #projetos {
+    padding: 20px 0;
+    gap: 10px;
   }
 
   .projetos-marquee-container {
-    padding: 2px 0;
+    height: calc((100svh - 20px - 20px - 10px) / 2);
   }
 
   .projeto-card-badge {
