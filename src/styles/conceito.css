@@ -3,7 +3,8 @@
    Estética monocromática, editorial, minimalista e 100% centralizada.
    ========================================================== */
 
-#conceito {
+/* ── Palco Unificado: Manifesto + Projetos (Transição sem espaço preto) ── */
+.conceito-projetos-stage {
   position: relative;
   width: 100%;
   height: 100svh;
@@ -11,10 +12,23 @@
   background-color: var(--bg);
   border-top: 1px solid var(--gray-800);
   overflow: hidden;
+}
+
+#conceito {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: transparent;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 2;
+  will-change: transform, opacity;
 }
 
 /* ── Brilho radial de fundo (Parallax suave) ── */

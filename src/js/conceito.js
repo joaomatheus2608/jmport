@@ -93,13 +93,16 @@ export function initConceito() {
   gsap.set(words, { opacity: 0.14 });
   gsap.set(underlines, { scaleX: 0, transformOrigin: 'left center' });
 
+  const stage = document.getElementById('conceito-projetos-stage') || section;
+  const projetosSection = document.getElementById('projetos');
+
   // Responsividade e pin ajustado com gsap.matchMedia
   const mm = gsap.matchMedia();
 
   function setupAnimation(endDistance) {
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: section,
+        trigger: stage,
         start: 'top top',
         end: endDistance,
         pin: true,
@@ -109,8 +112,8 @@ export function initConceito() {
       },
     });
 
-    // 1. Revelação das palavras (ocupa 0% a 50% da timeline)
-    const wordsDuration = 0.50;
+    // 1. Revelação das palavras (ocupa 0% a 45% da timeline)
+    const wordsDuration = 0.45;
     const wordStep = wordsDuration / words.length;
 
     words.forEach((word, index) => {
@@ -125,16 +128,16 @@ export function initConceito() {
       );
     });
 
-    // 2. Sublinhados nas palavras de destaque (42% a 54% da timeline)
+    // 2. Sublinhados nas palavras de destaque (38% a 48% da timeline)
     tl.to(
       underlines,
       {
         scaleX: 1,
-        duration: 0.12,
+        duration: 0.10,
         stagger: 0.03,
         ease: 'power2.out',
       },
-      0.42
+      0.38
     );
 
     // 3. Parallax suave no brilho de fundo
@@ -142,20 +145,20 @@ export function initConceito() {
       tl.fromTo(
         glow,
         { yPercent: -6 },
-        { yPercent: 6, ease: 'none', duration: 0.58 },
+        { yPercent: 6, ease: 'none', duration: 0.50 },
         0
       );
     }
 
-    // 4. TRANSIÇÃO IMERSIVA: ENTRANDO NA TELA COM DISTORÇÃO (58% a 100%)
-    // Dispersão leve, fluida e sem filtros pesados (60 FPS constantes)
+    // 4. TRANSIÇÃO IMEDIATA: ASSIM QUE AS LETRAS SE EMBARALHAM, O MARQUEE SURGE NO CENTRO
+    // Dispersão das palavras para as extremidades da tela (50% a 80%)
     const midIndex = Math.floor(words.length / 2);
 
     words.forEach((word, index) => {
       const relPos = (index - midIndex) / midIndex; // -1 (esquerda) a +1 (direita)
       const isLeft = relPos < 0;
       const xDist = (isLeft ? -1 : 1) * (window.innerWidth * (0.42 + Math.abs(relPos) * 0.45));
-      const yDist = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.30 + (index % 3) * 0.15));
+      const yDist = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.28 + (index % 3) * 0.15));
 
       tl.to(
         word,
@@ -164,10 +167,10 @@ export function initConceito() {
           y: yDist,
           scale: 3.2,
           opacity: 0,
-          duration: 0.38,
+          duration: 0.30,
           ease: 'power2.in',
         },
-        0.58 + Math.abs(relPos) * 0.03
+        0.50 + Math.abs(relPos) * 0.02
       );
     });
 
@@ -177,10 +180,10 @@ export function initConceito() {
       {
         opacity: 0,
         scaleX: 2,
-        duration: 0.25,
+        duration: 0.20,
         ease: 'power2.in',
       },
-      0.60
+      0.50
     );
 
     // Fade out do brilho de fundo
@@ -190,10 +193,10 @@ export function initConceito() {
         {
           scale: 2.2,
           opacity: 0,
-          duration: 0.35,
+          duration: 0.28,
           ease: 'power2.in',
         },
-        0.62
+        0.51
       );
     }
 
@@ -203,23 +206,52 @@ export function initConceito() {
       {
         scale: 2.2,
         opacity: 0,
-        duration: 0.38,
+        duration: 0.30,
         ease: 'power2.in',
       },
-      0.58
+      0.50
     );
+
+    // Desativa pointer-events do conceito para liberar interação com os cards de projetos
+    tl.set(
+      section,
+      {
+        pointerEvents: 'none',
+      },
+      0.60
+    );
+
+    // 5. SIMULTÂNEO: O MARQUEE DE PROJETOS SURGE NO MESMO PALCO (SEM ESPAÇO PRETO)
+    if (projetosSection) {
+      tl.fromTo(
+        projetosSection,
+        {
+          scale: 0.88,
+          opacity: 0,
+          pointerEvents: 'none',
+        },
+        {
+          scale: 1,
+          opacity: 1,
+          pointerEvents: 'auto',
+          duration: 0.30,
+          ease: 'power2.out',
+        },
+        0.50
+      );
+    }
 
     return tl;
   }
 
-  // Desktop: end "+=120%" (leitura nítida + transição ágil e fluida)
+  // Desktop: end "+=160%" (leitura nítida + transição imediata para o marquee)
   mm.add('(min-width: 769px)', () => {
-    setupAnimation('+=120%');
+    setupAnimation('+=160%');
   });
 
-  // Mobile: end "+=90%"
+  // Mobile: end "+=120%"
   mm.add('(max-width: 768px)', () => {
-    setupAnimation('+=90%');
+    setupAnimation('+=120%');
   });
 
   // Recalcula o ScrollTrigger após o carregamento completo das fontes
