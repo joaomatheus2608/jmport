@@ -93,13 +93,16 @@ export function initConceito() {
   gsap.set(words, { opacity: 0.14 });
   gsap.set(underlines, { scaleX: 0, transformOrigin: 'left center' });
 
+  const pinTarget = document.getElementById('transicao-conceito-projetos') || section;
+  const projetosSection = document.getElementById('projetos');
+
   // Responsividade e pin ajustado com gsap.matchMedia
   const mm = gsap.matchMedia();
 
   function setupAnimation(endDistance) {
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: section,
+        trigger: pinTarget,
         start: 'top top',
         end: endDistance,
         pin: true,
@@ -109,8 +112,8 @@ export function initConceito() {
       },
     });
 
-    // 1. Revelação das palavras (ocupa 0% a 44% da timeline)
-    const wordsDuration = 0.44;
+    // 1. Revelação das palavras (ocupa 0% a 46% da timeline)
+    const wordsDuration = 0.46;
     const wordStep = wordsDuration / words.length;
 
     words.forEach((word, index) => {
@@ -118,136 +121,137 @@ export function initConceito() {
         word,
         {
           opacity: 1,
-          duration: 0.06,
+          duration: 0.08,
           ease: 'none',
         },
         index * wordStep
       );
     });
 
-    // 2. Sublinhados nas palavras de destaque (36% a 48% da timeline)
+    // 2. Sublinhados nas palavras de destaque (40% a 52% da timeline)
     tl.to(
       underlines,
       {
         scaleX: 1,
         duration: 0.12,
-        stagger: 0.04,
+        stagger: 0.03,
         ease: 'power2.out',
       },
-      0.36
+      0.40
     );
 
-    // 3. Parallax sutil no brilho radial de fundo durante a leitura
+    // 3. Parallax suave no brilho de fundo
     if (glow) {
       tl.fromTo(
         glow,
-        { yPercent: -8 },
-        { yPercent: 8, ease: 'none', duration: 0.52 },
+        { yPercent: -6 },
+        { yPercent: 6, ease: 'none', duration: 0.54 },
         0
       );
     }
 
-    // 4. EFEITO TÚNEL 3D / MERGULHO NA TELA COM DISTORÇÃO (55% a 100%)
+    // 4. TRANSIÇÃO IMERSIVA: ENTRANDO DENTRO DA 3ª SEÇÃO (54% a 88%)
+    // Dispersão leve, fluida e sem filtros pesados (60 FPS constantes)
     const midIndex = Math.floor(words.length / 2);
 
     words.forEach((word, index) => {
       const relPos = (index - midIndex) / midIndex; // -1 (esquerda) a +1 (direita)
       const isLeft = relPos < 0;
-      const xDist = (isLeft ? -1 : 1) * (window.innerWidth * (0.65 + Math.abs(relPos) * 0.75));
-      const yDist = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.45 + (index % 4) * 0.25));
-      const rotZ = (isLeft ? -1 : 1) * (18 + Math.abs(index - midIndex) * 2.8);
-      const rotY = (isLeft ? -1 : 1) * 35;
+      const xDist = (isLeft ? -1 : 1) * (window.innerWidth * (0.4 + Math.abs(relPos) * 0.45));
+      const yDist = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.28 + (index % 3) * 0.15));
 
       tl.to(
         word,
         {
           x: xDist,
           y: yDist,
-          z: 750 + Math.abs(index - midIndex) * 35,
-          scale: 9 + Math.abs(relPos) * 4,
-          rotationZ: rotZ,
-          rotationY: rotY,
-          filter: 'blur(22px)',
+          scale: 3.2,
           opacity: 0,
-          duration: 0.42,
+          duration: 0.32,
           ease: 'power2.in',
         },
-        0.55 + Math.abs(relPos) * 0.04
+        0.54 + Math.abs(relPos) * 0.03
       );
     });
 
-    // Sublinhados explodem e desvanecem
+    // Sublinhados desvanecem
     tl.to(
       underlines,
       {
-        scaleX: 4,
         opacity: 0,
-        filter: 'blur(12px)',
-        duration: 0.35,
+        scaleX: 2,
+        duration: 0.22,
         ease: 'power2.in',
       },
-      0.56
+      0.55
     );
 
-    // Glow de fundo expande como um portal dimensional
+    // Fade out do brilho de fundo
     if (glow) {
       tl.to(
         glow,
         {
-          scale: 5.5,
+          scale: 2.2,
           opacity: 0,
-          duration: 0.42,
+          duration: 0.30,
           ease: 'power2.in',
         },
         0.56
       );
     }
 
-    // Container do texto expande e desvanece
+    // Container de texto do conceito escala para frente e desvanece
     tl.to(
       '.conceito-body',
       {
-        scale: 4,
-        filter: 'blur(18px)',
+        scale: 2.2,
         opacity: 0,
-        duration: 0.42,
+        duration: 0.32,
         ease: 'power2.in',
       },
-      0.55
+      0.54
     );
 
-    // A 3ª seção (#projetos) emerge do fundo do túnel
-    const projetosSection = document.getElementById('projetos');
+    // Desativa pointer-events da seção conceito para liberar interação com projetos
+    tl.set(
+      section,
+      {
+        pointerEvents: 'none',
+      },
+      0.62
+    );
+
+    // 5. A 3ª SEÇÃO (#projetos) SURGE DO FUNDO DA TELA EM PLENO FOCO
     if (projetosSection) {
       tl.fromTo(
         projetosSection,
         {
-          scale: 0.8,
+          scale: 0.88,
           opacity: 0,
-          filter: 'blur(14px)',
+          pointerEvents: 'none',
         },
         {
           scale: 1,
           opacity: 1,
-          filter: 'blur(0px)',
-          duration: 0.38,
+          pointerEvents: 'auto',
+          duration: 0.32,
           ease: 'power2.out',
         },
-        0.62
+        0.56
       );
     }
 
     return tl;
   }
 
-  // Desktop (> 768px): end "+=240%" para leitura confortável e mergulho imersivo
+  // Desktop: end "+=180%" (leitura nítida + transição ágil e fluida)
   mm.add('(min-width: 769px)', () => {
-    setupAnimation('+=240%');
+    setupAnimation('+=180%');
   });
 
-  // Mobile (<= 768px): end "+=180%"
+  // Mobile: end "+=140%"
   mm.add('(max-width: 768px)', () => {
-    setupAnimation('+=180%');
+    setupAnimation('+=140%');
   });
 
   // Recalcula o ScrollTrigger após o carregamento completo das fontes

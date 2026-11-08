@@ -3,10 +3,22 @@
    Estética monocromática, editorial, minimalista e 100% centralizada.
    ========================================================== */
 
-#conceito {
+/* ── Wrapper Pinned da Transição Imersiva (Conceito -> Projetos) ── */
+.transicao-conceito-projetos {
   position: relative;
   width: 100%;
   height: 100svh;
+  min-height: 600px;
+  background-color: var(--bg);
+  overflow: hidden;
+}
+
+#conceito {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   min-height: 600px;
   background-color: var(--bg);
   border-top: 1px solid var(--gray-800);
@@ -15,11 +27,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  perspective: 1200px;
-  perspective-origin: 50% 50%;
+  z-index: 2;
+  will-change: transform, opacity;
 }
 
-/* ── Brilho radial de fundo (Parallax suave e expansão dimensional) ── */
+/* ── Brilho radial de fundo (Parallax suave) ── */
 .conceito-glow {
   position: absolute;
   top: 50%;
@@ -39,7 +51,7 @@
   will-change: transform, opacity;
 }
 
-/* ── Container interno com suporte 3D ── */
+/* ── Container interno ── */
 .conceito-container {
   position: relative;
   width: 100%;
@@ -52,7 +64,6 @@
   justify-content: center;
   align-items: center;
   z-index: 2;
-  transform-style: preserve-3d;
 }
 
 /* ── Bloco central de texto do Manifesto ── */
@@ -61,8 +72,7 @@
   max-width: 1350px;
   margin: 0 auto;
   text-align: center;
-  transform-style: preserve-3d;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 .conceito-heading {
@@ -74,23 +84,19 @@
   color: var(--white);
   text-align: center;
   text-wrap: balance;
-  transform-style: preserve-3d;
 }
 
 /* Container do texto que é visto (com spans) */
 .conceito-display {
   display: inline;
-  transform-style: preserve-3d;
 }
 
-/* Cada palavra individual com suporte a distorção 3D */
+/* Cada palavra individual acelerada por hardware */
 .conceito-display .w {
   display: inline-block;
   opacity: 0.14; /* Estado inicial: acende para 1 no scrub */
-  will-change: transform, opacity, filter;
-  transition: opacity 0.05s linear;
+  will-change: transform, opacity;
   transform-origin: 50% 50%;
-  transform-style: preserve-3d;
 }
 
 /* Wrappers para as palavras de destaque */

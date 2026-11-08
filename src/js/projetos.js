@@ -145,43 +145,11 @@ export function initProjetos() {
     }
   });
 
-  // ── 4. ANIMAÇÃO DE ENTRADA DO CABEÇALHO COM SCROLLTRIGGER ──
-  if (!reducedMotion) {
-    if (title) {
-      gsap.fromTo(
-        title,
-        { opacity: 0, y: 35, letterSpacing: '-0.08em' },
-        {
-          opacity: 1,
-          y: 0,
-          letterSpacing: '-0.05em',
-          duration: 1.0,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 85%',
-            once: true,
-          },
-        }
-      );
-    }
-
-    if (tag) {
-      gsap.fromTo(
-        tag,
-        { opacity: 0, y: 15 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 88%',
-            once: true,
-          },
-        }
-      );
-    }
+  // ── 4. ESTADO DO CABEÇALHO DA SEÇÃO ──
+  if (title) {
+    gsap.set(title, { opacity: 1, y: 0 });
+  }
+  if (tag) {
+    gsap.set(tag, { opacity: 1, y: 0 });
   }
 }

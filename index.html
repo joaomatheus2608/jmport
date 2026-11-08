@@ -283,61 +283,65 @@
 
     </section>
 
-    <!-- ────────────────────────────
-         SEÇÃO 2: MANIFESTO / CONCEITO
-    ──────────────────────────── -->
-    <section id="conceito" aria-labelledby="conceito-titulo">
-      <!-- Brilho radial de fundo -->
-      <div class="conceito-glow" aria-hidden="true"></div>
+    <!-- ══════════════════════════════════════════
+         TRANSIÇÃO CONCEITO -> PROJETOS (Portal 3D imersivo)
+    ══════════════════════════════════════════ -->
+    <div id="transicao-conceito-projetos" class="transicao-conceito-projetos">
 
-      <div class="conceito-container">
-        <!-- Texto principal do Manifesto (Centralizado) -->
-        <div class="conceito-body">
-          <h2 id="conceito-titulo" class="conceito-heading">
-            <!-- Acessibilidade: texto integral legível por leitores de tela -->
-            <span class="sr-only">
-              Um site que só é bonito não vende. Eu desenvolvo páginas rápidas, otimizadas e feitas sob medida para aparecer no Google e transformar visitas em clientes.
-            </span>
-            <!-- Renderização visual animada (gerada via conceito.js) -->
-            <span class="conceito-display" aria-hidden="true"></span>
-          </h2>
-        </div>
-      </div>
-    </section>
+      <!-- ────────────────────────────
+           SEÇÃO 2: MANIFESTO / CONCEITO
+      ──────────────────────────── -->
+      <section id="conceito" aria-labelledby="conceito-titulo">
+        <!-- Brilho radial de fundo -->
+        <div class="conceito-glow" aria-hidden="true"></div>
 
-    <!-- ────────────────────────────
-         SEÇÕES PLACEHOLDER (âncoras)
-    ──────────────────────────── -->
-    <!-- ────────────────────────────
-         SEÇÃO 3: PROJETOS (MARQUEE INFINITO)
-    ──────────────────────────── -->
-    <section
-      id="projetos"
-      aria-labelledby="projetos-heading"
-      role="region"
-      aria-label="Projetos"
-    >
-      <!-- Cabeçalho da seção -->
-      <div class="projetos-header">
-        <div class="projetos-header-left">
-          <span class="projetos-tag" aria-hidden="true">(01) PROJETOS</span>
-          <div class="projetos-title-wrap">
-            <h2 id="projetos-heading" class="projetos-title">Projetos no ar.</h2>
+        <div class="conceito-container">
+          <!-- Texto principal do Manifesto (Centralizado) -->
+          <div class="conceito-body">
+            <h2 id="conceito-titulo" class="conceito-heading">
+              <!-- Acessibilidade: texto integral legível por leitores de tela -->
+              <span class="sr-only">
+                Um site que só é bonito não vende. Eu desenvolvo páginas rápidas, otimizadas e feitas sob medida para aparecer no Google e transformar visitas em clientes.
+              </span>
+              <!-- Renderização visual animada (gerada via conceito.js) -->
+              <span class="conceito-display" aria-hidden="true"></span>
+            </h2>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Marquee contínuo de projetos com desaceleração no hover e links diretos -->
-      <div
-        class="projetos-marquee-container"
-        tabindex="0"
-        aria-label="Carrossel contínuo de projetos. Passe o mouse para desacelerar ou clique para abrir o projeto."
+      <!-- ────────────────────────────
+           SEÇÃO 3: PROJETOS (MARQUEE INFINITO)
+      ──────────────────────────── -->
+      <section
+        id="projetos"
+        aria-labelledby="projetos-heading"
+        role="region"
+        aria-label="Projetos"
       >
-        <div class="projetos-marquee-track" id="projetos-track">
-          <!-- Cards gerados dinamicamente via projetos.js -->
+        <!-- Cabeçalho da seção -->
+        <div class="projetos-header">
+          <div class="projetos-header-left">
+            <span class="projetos-tag" aria-hidden="true">(01) PROJETOS</span>
+            <div class="projetos-title-wrap">
+              <h2 id="projetos-heading" class="projetos-title">Projetos no ar.</h2>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+
+        <!-- Marquee contínuo de projetos com desaceleração no hover e links diretos -->
+        <div
+          class="projetos-marquee-container"
+          tabindex="0"
+          aria-label="Carrossel contínuo de projetos. Passe o mouse para desacelerar ou clique para abrir o projeto."
+        >
+          <div class="projetos-marquee-track" id="projetos-track">
+            <!-- Cards gerados dinamicamente via projetos.js -->
+          </div>
+        </div>
+      </section>
+
+    </div>
 
     <!-- ────────────────────────────
          SEÇÃO 4: ECOSSISTEMA
