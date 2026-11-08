@@ -33,6 +33,15 @@ export const projects = [
     image: '/assets/projetos/michael-jackson.jpg',
   },
   {
+    slug: 'monster-energy',
+    name: 'Monster Energy',
+    category: 'LANDING PAGE · CONCEITO 3D',
+    description: 'Landing page conceitual da Monster Energy: "Libere a fera", com visual ousado e interações imersivas.',
+    tags: ['Web Design', '3D Concept', 'Branding', 'Interatividade'],
+    url: 'https://www.instagram.com/reel/DfdkX5axS4n/?utm_source=ig_web_copy_link&vrfl=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
+    image: '/assets/projetos/monster-energy.jpg',
+  },
+  {
     slug: 'seu-projeto',
     name: 'O Seu Projeto',
     category: 'SEU SITE · SOB MEDIDA',
