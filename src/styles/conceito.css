@@ -96,6 +96,7 @@
   display: inline-block;
   opacity: 0.14; /* Estado inicial: acende para 1 no scrub */
   will-change: transform, opacity;
+  transform: translateZ(0); /* força compositing layer própria */
   transform-origin: 50% 50%;
 }
 

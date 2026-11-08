@@ -1,8 +1,8 @@
 /**
  * hero.js
- * – Marquee contínuo com GSAP (0 a -50%, desaceleração a 30% no hover)
- * – Spotlight sobre container fixo com interpolação lerp (0.08)
- * – Animação de entrada GSAP timeline (~2s)
+ * – Marquee contínuo com GSAP (xPercent -50, repeat -1)
+ * – Spotlight sobre container fixo com lerp throttled
+ * – Animação de entrada GSAP (substitui splash)
  * – Efeito magnético nos botões CTA
  * – Menu mobile e scroll listener do header
  */
@@ -16,145 +16,133 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
 /* ─────────────────────────────────────────────
-   1. MARQUEE CONTÍNUO (GSAP + hover timeScale)
+   1. MARQUEE CONTÍNUO
 ───────────────────────────────────────────── */
 function initMarquee() {
   const wrapper = document.querySelector('.hero-marquee-wrapper');
-  const tracks = document.querySelectorAll('.hero-marquee-track');
-  if (!wrapper || !tracks.length) return;
-
-  if (reducedMotion) return;
+  const tracks  = document.querySelectorAll('.hero-marquee-track');
+  if (!wrapper || !tracks.length || reducedMotion) return;
 
   const isMobile = window.innerWidth <= 768;
-  // Desktop: ~50s (40-60s) | Mobile: ~35s (30-40s)
   const duration = isMobile ? 35 : 50;
 
-  // Anima ambos os tracks (base e spotlight) de 0 a -50% perfeitamente sincronizados
   const marqueeTween = gsap.to(tracks, {
     xPercent: -50,
     ease: 'none',
-    duration: duration,
+    duration,
     repeat: -1,
   });
 
-  // Ao passar o mouse sobre o marquee, a velocidade reduz suavemente a 30%
   wrapper.addEventListener('mouseenter', () => {
     gsap.to(marqueeTween, { timeScale: 0.3, duration: 0.6, ease: 'power2.out' });
   });
-
-  // Ao sair do hover, volta à velocidade normal
   wrapper.addEventListener('mouseleave', () => {
     gsap.to(marqueeTween, { timeScale: 1, duration: 0.6, ease: 'power2.out' });
   });
 }
 
 /* ─────────────────────────────────────────────
-   2. SPOTLIGHT SOBRE O MARQUEE (máscara radial no container fixo)
+   2. SPOTLIGHT COM LERP THROTTLED (1 RAF por frame, cancelável)
 ───────────────────────────────────────────── */
 function initMarqueeSpotlight() {
-  const heroSection = document.getElementById('hero');
+  const heroSection    = document.getElementById('hero');
   const spotlightLayer = document.querySelector('.marquee-layer-spotlight');
   if (!heroSection || !spotlightLayer) return;
 
-  let targetX = 0;
-  let targetY = 0;
-  let currentX = 0;
-  let currentY = 0;
-  const LERP_FACTOR = 0.08;
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  const LERP = 0.09;
+  let rafId = null;
 
   function lerp(a, b, t) { return a + (b - a) * t; }
 
-  function updateMask() {
-    currentX = lerp(currentX, targetX, LERP_FACTOR);
-    currentY = lerp(currentY, targetY, LERP_FACTOR);
+  function tick() {
+    currentX = lerp(currentX, targetX, LERP);
+    currentY = lerp(currentY, targetY, LERP);
     spotlightLayer.style.setProperty('--mx', `${currentX}px`);
     spotlightLayer.style.setProperty('--my', `${currentY}px`);
-    requestAnimationFrame(updateMask);
+
+    // Para o RAF quando convergiu (economiza CPU)
+    if (Math.abs(targetX - currentX) > 0.5 || Math.abs(targetY - currentY) > 0.5) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      rafId = null;
+    }
   }
 
-  // Inicializa centralizado
-  const initialRect = spotlightLayer.getBoundingClientRect();
-  targetX = currentX = initialRect.width / 2;
-  targetY = currentY = initialRect.height / 2;
+  function requestTick() {
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  // Centro inicial
+  const rect = spotlightLayer.getBoundingClientRect();
+  targetX = currentX = rect.width / 2;
+  targetY = currentY = rect.height / 2;
   spotlightLayer.style.setProperty('--mx', `${currentX}px`);
   spotlightLayer.style.setProperty('--my', `${currentY}px`);
 
-  // Em dispositivos touch: auto-tour suave em formato 8
   if (isTouch) {
+    // Auto-tour no mobile – loop lemniscata suave
     gsap.to({}, {
       duration: 8,
       repeat: -1,
       ease: 'sine.inOut',
       onUpdate: function () {
-        const rect = spotlightLayer.getBoundingClientRect();
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        const t = this.progress() * Math.PI * 2;
-        const a = rect.width * 0.35;
-        const denom = 1 + Math.sin(t) * Math.sin(t);
-        targetX = cx + (a * Math.cos(t)) / denom;
-        targetY = cy + (a * 0.35 * Math.sin(t) * Math.cos(t)) / denom;
+        const r = spotlightLayer.getBoundingClientRect();
+        const cx = r.width / 2;
+        const cy = r.height / 2;
+        const t  = this.progress() * Math.PI * 2;
+        const a  = r.width * 0.35;
+        const d  = 1 + Math.sin(t) * Math.sin(t);
+        targetX = cx + (a * Math.cos(t)) / d;
+        targetY = cy + (a * 0.35 * Math.sin(t) * Math.cos(t)) / d;
+        requestTick();
       },
     });
-
-    requestAnimationFrame(updateMask);
     return;
   }
 
-  // Desktop: acompanha o mouse com inércia
   heroSection.addEventListener('mousemove', (e) => {
-    const rect = spotlightLayer.getBoundingClientRect();
-    targetX = e.clientX - rect.left;
-    targetY = e.clientY - rect.top;
-  });
+    const r = spotlightLayer.getBoundingClientRect();
+    targetX = e.clientX - r.left;
+    targetY = e.clientY - r.top;
+    requestTick();
+  }, { passive: true });
 
-  // Ao sair do hero, retorna suavemente ao centro
   heroSection.addEventListener('mouseleave', () => {
-    const rect = spotlightLayer.getBoundingClientRect();
-    targetX = rect.width / 2;
-    targetY = rect.height / 2;
-  });
-
-  requestAnimationFrame(updateMask);
+    const r = spotlightLayer.getBoundingClientRect();
+    targetX = r.width / 2;
+    targetY = r.height / 2;
+    requestTick();
+  }, { passive: true });
 }
 
 /* ─────────────────────────────────────────────
    3. EFEITO MAGNÉTICO NOS CTAs
 ───────────────────────────────────────────── */
 function initMagneticButtons() {
+  if (isTouch) return; // sem efeito em touch
   const buttons = document.querySelectorAll('.btn-cta-primary, .btn-cta-secondary');
-  const RADIUS = 80;
-  const MAX_SHIFT = 10;
+  const RADIUS = 80, MAX_SHIFT = 10;
 
   buttons.forEach((btn) => {
     btn.addEventListener('mousemove', (e) => {
       const rect = btn.getBoundingClientRect();
-      const cx = rect.left + rect.width  / 2;
-      const cy = rect.top  + rect.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
+      const dx = e.clientX - (rect.left + rect.width  / 2);
+      const dy = e.clientY - (rect.top  + rect.height / 2);
       const dist = Math.sqrt(dx * dx + dy * dy);
-
       if (dist < RADIUS) {
-        const strength = 1 - dist / RADIUS;
+        const s = 1 - dist / RADIUS;
         gsap.to(btn, {
-          x: dx * strength * (MAX_SHIFT / (dist || 1)),
-          y: dy * strength * (MAX_SHIFT / (dist || 1)),
-          duration: 0.3,
-          ease: 'power2.out',
-          overwrite: 'auto',
+          x: dx * s * (MAX_SHIFT / (dist || 1)),
+          y: dy * s * (MAX_SHIFT / (dist || 1)),
+          duration: 0.3, ease: 'power2.out', overwrite: 'auto',
         });
       }
-    });
+    }, { passive: true });
 
     btn.addEventListener('mouseleave', () => {
-      gsap.to(btn, {
-        x: 0,
-        y: 0,
-        duration: 0.8,
-        ease: 'elastic.out(1, 0.5)',
-        overwrite: 'auto',
-      });
+      gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1,0.5)', overwrite: 'auto' });
     });
   });
 }
@@ -163,29 +151,21 @@ function initMagneticButtons() {
    4. HEADER: SCROLL LISTENER
 ───────────────────────────────────────────── */
 function initHeaderScroll() {
-  const header = document.querySelector('.site-header');
+  const header      = document.querySelector('.site-header');
   const heroSection = document.getElementById('hero');
   if (!header) return;
 
   let ticking = false;
 
   function updateHeaderState() {
-    const heroH = heroSection ? heroSection.offsetHeight : window.innerHeight;
-    // Comprime exatamente ao sair da área do Hero
+    const heroH     = heroSection ? heroSection.offsetHeight : window.innerHeight;
     const threshold = heroH - 120;
-    if (window.scrollY > threshold) {
-      header.classList.add('is-scrolled');
-    } else {
-      header.classList.remove('is-scrolled');
-    }
+    header.classList.toggle('is-scrolled', window.scrollY > threshold);
     ticking = false;
   }
 
   window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(updateHeaderState);
-      ticking = true;
-    }
+    if (!ticking) { requestAnimationFrame(updateHeaderState); ticking = true; }
   }, { passive: true });
 
   window.addEventListener('resize', updateHeaderState, { passive: true });
@@ -199,7 +179,6 @@ function initMobileMenu() {
   const hamburgerBtn = document.querySelector('.hamburger-btn');
   const mobileMenu   = document.querySelector('.mobile-menu');
   const mobileLinks  = document.querySelectorAll('.mobile-nav-links a');
-
   if (!hamburgerBtn || !mobileMenu) return;
 
   let isOpen = false;
@@ -210,17 +189,9 @@ function initMobileMenu() {
     hamburgerBtn.setAttribute('aria-expanded', 'true');
     mobileMenu.classList.add('is-open');
     document.body.classList.add('scroll-locked');
-
     gsap.fromTo(mobileLinks,
       { y: '40px', opacity: 0 },
-      {
-        y: '0px',
-        opacity: 1,
-        duration: 0.5,
-        stagger: 0.07,
-        ease: 'power4.out',
-        delay: 0.05,
-      }
+      { y: '0px', opacity: 1, duration: 0.5, stagger: 0.07, ease: 'power4.out', delay: 0.05 }
     );
   }
 
@@ -229,38 +200,20 @@ function initMobileMenu() {
     hamburgerBtn.classList.remove('is-open');
     hamburgerBtn.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('scroll-locked');
-
     gsap.to(mobileLinks, {
-      opacity: 0,
-      y: '20px',
-      duration: 0.25,
-      stagger: 0.04,
-      ease: 'power2.in',
-      onComplete: () => {
-        mobileMenu.classList.remove('is-open');
-        hamburgerBtn.focus();
-      },
+      opacity: 0, y: '20px', duration: 0.25, stagger: 0.04, ease: 'power2.in',
+      onComplete: () => { mobileMenu.classList.remove('is-open'); hamburgerBtn.focus(); },
     });
   }
 
-  hamburgerBtn.addEventListener('click', () => {
-    if (isOpen) closeMenu();
-    else openMenu();
-  });
-
-  mobileLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      if (isOpen) closeMenu();
-    });
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isOpen) closeMenu();
-  });
+  hamburgerBtn.addEventListener('click', () => isOpen ? closeMenu() : openMenu());
+  mobileLinks.forEach(link => link.addEventListener('click', () => { if (isOpen) closeMenu(); }));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) closeMenu(); });
 }
 
 /* ─────────────────────────────────────────────
-   6. ANIMAÇÃO DE ENTRADA
+   6. ANIMAÇÃO DE ENTRADA (substitui splash)
+   – Sequência orquestrada com cortina + fade-in dos elementos
 ───────────────────────────────────────────── */
 function initEntranceAnimation() {
   const bg         = document.querySelector('.hero-grid');
@@ -271,43 +224,69 @@ function initEntranceAnimation() {
   const scroll     = document.querySelector('.scroll-indicator');
   const marquee    = document.querySelector('.hero-marquee-wrapper');
   const photo      = document.querySelector('.hero-photo-center');
+  const heroSection = document.getElementById('hero');
 
-  const allEls = [bg, headerEl, microBar, marquee, photo, ...taglineWords, ...ctas, scroll].filter(Boolean);
-
-  // Reduced-motion: mostra tudo imediatamente
   if (reducedMotion) {
-    gsap.set(allEls, { opacity: 1, y: 0, x: 0 });
+    const all = [bg, headerEl, microBar, marquee, photo, ...taglineWords, ...ctas, scroll].filter(Boolean);
+    gsap.set(all, { opacity: 1, y: 0, x: 0, scale: 1, clipPath: 'none' });
     return;
   }
 
-  // Previne qualquer flash antes da renderização
-  gsap.set(bg,       { opacity: 0 });
-  gsap.set(headerEl, { opacity: 0, y: -24 });
-  gsap.set(microBar, { opacity: 0, x: -12 });
-  gsap.set(ctas,     { opacity: 0, y: 20 });
-  gsap.set(taglineWords, { opacity: 0, y: '100%' });
-  if (marquee) gsap.set(marquee, { opacity: 0, y: 24 });
-  if (photo)   gsap.set(photo,   { opacity: 0, scale: 1.04 });
-  if (scroll)  gsap.set(scroll,  { opacity: 0 });
+  // Estado inicial: tudo invisível
+  if (bg)       gsap.set(bg,       { opacity: 0 });
+  if (headerEl) gsap.set(headerEl, { opacity: 0, y: -20 });
+  if (microBar) gsap.set(microBar, { opacity: 0, x: -10 });
+  if (ctas.length) gsap.set(ctas, { opacity: 0, y: 16 });
+  if (taglineWords.length) gsap.set(taglineWords, { opacity: 0, y: '80%' });
+  if (marquee)  gsap.set(marquee, { opacity: 0, y: 20 });
+  if (photo)    gsap.set(photo,   { opacity: 0, scale: 1.03 });
+  if (scroll)   gsap.set(scroll,  { opacity: 0 });
 
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+  // Cortina de entrada: o hero começa com um overlay escuro que sobe
+  const curtain = document.createElement('div');
+  curtain.style.cssText = `
+    position:fixed; inset:0; z-index:9999;
+    background:#050505;
+    transform-origin: top center;
+    pointer-events:none;
+  `;
+  document.body.appendChild(curtain);
 
-  // 0.0s: grid
-  tl.to(bg, { opacity: 1, duration: 0.8 }, 0);
-  // 0.2s: marquee surge com fade e sobe suavemente
-  if (marquee) tl.to(marquee, { opacity: 1, y: 0, duration: 1.0 }, 0.2);
-  // 0.4s: foto com escala sutil
-  if (photo) tl.to(photo, { opacity: 1, scale: 1, duration: 1.2 }, 0.4);
-  // 0.7s: header
-  tl.to(headerEl, { opacity: 1, y: 0, duration: 0.6 }, 0.7);
-  // 0.9s: microtextos
-  tl.to(microBar, { opacity: 1, x: 0, duration: 0.5 }, 0.9);
-  // 1.0s: tagline palavra por palavra
-  tl.to(taglineWords, { opacity: 1, y: '0%', duration: 0.5, stagger: 0.06 }, 1.0);
-  // 1.3s: CTAs
-  tl.to(ctas, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, 1.3);
-  // 1.6s: indicador de scroll
-  if (scroll) tl.to(scroll, { opacity: 1, duration: 0.4 }, 1.6);
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  // Cortina sobe e revela o hero (0s → 0.6s)
+  tl.to(curtain, {
+    yPercent: -100,
+    duration: 0.65,
+    ease: 'power4.inOut',
+    onComplete: () => curtain.remove(),
+  }, 0);
+
+  // Grid de fundo surge primeiro
+  if (bg) tl.to(bg, { opacity: 1, duration: 0.7 }, 0.1);
+
+  // Marquee emerge com fade suave
+  if (marquee) tl.to(marquee, { opacity: 1, y: 0, duration: 0.9 }, 0.2);
+
+  // Foto com escala sutil
+  if (photo) tl.to(photo, { opacity: 1, scale: 1, duration: 1.1 }, 0.3);
+
+  // Header desce do topo
+  if (headerEl) tl.to(headerEl, { opacity: 1, y: 0, duration: 0.55 }, 0.45);
+
+  // Microtextos aparecem da esquerda
+  if (microBar) tl.to(microBar, { opacity: 1, x: 0, duration: 0.5 }, 0.55);
+
+  // Tagline palavra por palavra (clip ascendente)
+  if (taglineWords.length) {
+    tl.to(taglineWords, { opacity: 1, y: '0%', duration: 0.45, stagger: 0.055 }, 0.65);
+  }
+
+  // CTAs surgem levemente de baixo
+  if (ctas.length) tl.to(ctas, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08 }, 0.9);
+
+  // Indicador de scroll por último
+  if (scroll) tl.to(scroll, { opacity: 1, duration: 0.4 }, 1.2);
 }
 
 /* ─────────────────────────────────────────────

@@ -152,20 +152,20 @@ export function initConceito() {
 
     // 4. TRANSIÇÃO: AS LETRAS SE EMBARALHAM E SOMEM TOTALMENTE ANTES DO MARQUEE
     // Dispersão das palavras para as extremidades (45% a 65%)
+    // Usando apenas x/y/opacity – sem scale para manter performance
     const midIndex = Math.floor(words.length / 2);
 
     words.forEach((word, index) => {
       const relPos = (index - midIndex) / midIndex; // -1 (esquerda) a +1 (direita)
       const isLeft = relPos < 0;
-      const xDist = (isLeft ? -1 : 1) * (window.innerWidth * (0.42 + Math.abs(relPos) * 0.45));
-      const yDist = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.28 + (index % 3) * 0.15));
+      const xDist  = (isLeft ? -1 : 1) * (window.innerWidth * (0.35 + Math.abs(relPos) * 0.4));
+      const yDist  = (index % 2 === 0 ? -1 : 1) * (window.innerHeight * (0.2 + (index % 3) * 0.1));
 
       tl.to(
         word,
         {
           x: xDist,
           y: yDist,
-          scale: 3.2,
           opacity: 0,
           duration: 0.20,
           ease: 'power2.in',
@@ -191,22 +191,20 @@ export function initConceito() {
       tl.to(
         glow,
         {
-          scale: 2.2,
           opacity: 0,
-          duration: 0.20,
+          duration: 0.18,
           ease: 'power2.in',
         },
         0.47
       );
     }
 
-    // Container de texto do conceito escala para frente e desvanece totalmente
+    // Container de texto do conceito desvanece totalmente
     tl.to(
       '.conceito-body',
       {
-        scale: 2.2,
         opacity: 0,
-        duration: 0.20,
+        duration: 0.18,
         ease: 'power2.in',
       },
       0.45

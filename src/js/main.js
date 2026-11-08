@@ -1,13 +1,13 @@
 /**
  * main.js
  * Ponto de entrada: importa módulos, registra plugins e inicializa seções.
+ * Splash removido – animação de entrada direta no Hero.
  */
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { initSmoothScroll } from './smooth-scroll.js';
-import { initSplash }       from './splash.js';
 import { initCursor }       from './cursor.js';
 import { initAsciiField }   from './ascii-field.js';
 import { initHero }         from './hero.js';
@@ -21,11 +21,8 @@ import { initOrcamento }    from './orcamento.js';
 gsap.registerPlugin(ScrollTrigger);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Rolagem com inércia ultra-fluida em todo o site
+  // Rolagem com inércia suave em todo o site
   initSmoothScroll();
-
-  // Splash Screen de download da Logo
-  initSplash();
 
   // Cursor customizado (apenas pointer:fine)
   initCursor();
@@ -34,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('ascii-canvas');
   if (canvas) initAsciiField(canvas);
 
-  // Seção 1: Hero
+  // Seção 1: Hero (com animação de entrada própria)
   initHero();
 
   // Seção 2: Manifesto / Conceito
