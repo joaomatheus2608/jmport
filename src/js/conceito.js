@@ -112,8 +112,8 @@ export function initConceito() {
       },
     });
 
-    // 1. Revelação das palavras (ocupa 0% a 45% da timeline)
-    const wordsDuration = 0.45;
+    // 1. Revelação das palavras (ocupa 0% a 38% da timeline)
+    const wordsDuration = 0.38;
     const wordStep = wordsDuration / words.length;
 
     words.forEach((word, index) => {
@@ -128,7 +128,7 @@ export function initConceito() {
       );
     });
 
-    // 2. Sublinhados nas palavras de destaque (38% a 48% da timeline)
+    // 2. Sublinhados nas palavras de destaque (32% a 42% da timeline)
     tl.to(
       underlines,
       {
@@ -137,7 +137,7 @@ export function initConceito() {
         stagger: 0.03,
         ease: 'power2.out',
       },
-      0.38
+      0.32
     );
 
     // 3. Parallax suave no brilho de fundo
@@ -145,13 +145,13 @@ export function initConceito() {
       tl.fromTo(
         glow,
         { yPercent: -6 },
-        { yPercent: 6, ease: 'none', duration: 0.50 },
+        { yPercent: 6, ease: 'none', duration: 0.45 },
         0
       );
     }
 
-    // 4. TRANSIÇÃO IMEDIATA: ASSIM QUE AS LETRAS SE EMBARALHAM, O MARQUEE SURGE NO CENTRO
-    // Dispersão das palavras para as extremidades da tela (50% a 80%)
+    // 4. TRANSIÇÃO: AS LETRAS SE EMBARALHAM E SOMEM TOTALMENTE ANTES DO MARQUEE
+    // Dispersão das palavras para as extremidades (45% a 65%)
     const midIndex = Math.floor(words.length / 2);
 
     words.forEach((word, index) => {
@@ -167,10 +167,10 @@ export function initConceito() {
           y: yDist,
           scale: 3.2,
           opacity: 0,
-          duration: 0.30,
+          duration: 0.20,
           ease: 'power2.in',
         },
-        0.50 + Math.abs(relPos) * 0.02
+        0.45 + Math.abs(relPos) * 0.015
       );
     });
 
@@ -180,10 +180,10 @@ export function initConceito() {
       {
         opacity: 0,
         scaleX: 2,
-        duration: 0.20,
+        duration: 0.16,
         ease: 'power2.in',
       },
-      0.50
+      0.46
     );
 
     // Fade out do brilho de fundo
@@ -193,23 +193,23 @@ export function initConceito() {
         {
           scale: 2.2,
           opacity: 0,
-          duration: 0.28,
+          duration: 0.20,
           ease: 'power2.in',
         },
-        0.51
+        0.47
       );
     }
 
-    // Container de texto do conceito escala para frente e desvanece
+    // Container de texto do conceito escala para frente e desvanece totalmente
     tl.to(
       '.conceito-body',
       {
         scale: 2.2,
         opacity: 0,
-        duration: 0.30,
+        duration: 0.20,
         ease: 'power2.in',
       },
-      0.50
+      0.45
     );
 
     // Desativa pointer-events do conceito para liberar interação com os cards de projetos
@@ -218,15 +218,15 @@ export function initConceito() {
       {
         pointerEvents: 'none',
       },
-      0.60
+      0.65
     );
 
-    // 5. SIMULTÂNEO: O MARQUEE DE PROJETOS SURGE NO MESMO PALCO (SEM ESPAÇO PRETO)
+    // 5. APENAS APÓS AS LETRAS SUMIREM TOTALMENTE: FADE IN LENTO E SUAVE DO MARQUEE (66% a 100%)
     if (projetosSection) {
       tl.fromTo(
         projetosSection,
         {
-          scale: 0.88,
+          scale: 0.90,
           opacity: 0,
           pointerEvents: 'none',
         },
@@ -234,24 +234,24 @@ export function initConceito() {
           scale: 1,
           opacity: 1,
           pointerEvents: 'auto',
-          duration: 0.30,
-          ease: 'power2.out',
+          duration: 0.34,
+          ease: 'sine.out',
         },
-        0.50
+        0.66
       );
     }
 
     return tl;
   }
 
-  // Desktop: end "+=160%" (leitura nítida + transição imediata para o marquee)
+  // Desktop: end "+=180%" (leitura nítida + dispersão completa + fade in suave do marquee)
   mm.add('(min-width: 769px)', () => {
-    setupAnimation('+=160%');
+    setupAnimation('+=180%');
   });
 
-  // Mobile: end "+=120%"
+  // Mobile: end "+=140%"
   mm.add('(max-width: 768px)', () => {
-    setupAnimation('+=120%');
+    setupAnimation('+=140%');
   });
 
   // Recalcula o ScrollTrigger após o carregamento completo das fontes

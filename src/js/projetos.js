@@ -1,35 +1,26 @@
 /**
  * projetos.js
- * Seção de Projetos – Marquee contínuo, infinito e clicável.
+ * Seção de Projetos – Marquee contínuo duplo e em direções opostas.
+ * - Fileira 1: Projetos / Landing Pages (Direita -> Esquerda)
+ * - Fileira 2: Cardápios Digitais / Delivery (Esquerda -> Direita)
  * - Foco total nas imagens dos projetos
  * - Desacelera suavemente no hover do mouse
  * - Clique direto redireciona para o projeto
- * - Loop infinito impecável sincronizado via GSAP
+ * - Loop infinito sincronizado via GSAP
  */
 
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { projects } from './projects-data.js';
+import { projects, cardapios } from './projects-data.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function initProjetos() {
-  const section = document.getElementById('projetos');
-  if (!section) return;
-
-  const container = section.querySelector('.projetos-marquee-container');
-  const track = section.querySelector('#projetos-track');
-  const title = section.querySelector('.projetos-title');
-  const tag = section.querySelector('.projetos-tag');
-
-  if (!container || !track) return;
-
-  // ── 1. GERAÇÃO DOS CARDS (4 repetições completas para cobertura total da tela) ──
+/**
+ * Cria os cards dinamicamente dentro de um track
+ */
+function createCards(track, items, repetitions = 4) {
   track.innerHTML = '';
-  const REPETITIONS = 4;
-
-  for (let r = 0; r < REPETITIONS; r++) {
-    projects.forEach((proj) => {
+  for (let r = 0; r < repetitions; r++) {
+    items.forEach((proj) => {
       const isInternal = proj.url.startsWith('#');
       const badgeText = isInternal ? 'FAZER ORÇAMENTO' : proj.name;
 
@@ -41,6 +32,15 @@ export function initProjetos() {
 
       if (isInternal) {
         card.setAttribute('data-internal', 'true');
+        card.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetEl = document.querySelector(proj.url);
+          if (targetEl) {
+            const headerOffset = 72;
+            const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - headerOffset;
+            window.scrollTo({ top: targetTop, behavior: 'smooth' });
+          }
+        });
       } else {
         card.setAttribute('target', '_blank');
         card.setAttribute('rel', 'noopener noreferrer');
@@ -61,28 +61,19 @@ export function initProjetos() {
           </div>
         </div>
       `;
-
-      // Intercepta clique caso seja âncora interna (#orcamento) para usar scroll suave
-      if (isInternal) {
-        card.addEventListener('click', (e) => {
-          e.preventDefault();
-          const targetEl = document.querySelector(proj.url);
-          if (targetEl) {
-            const headerOffset = 72;
-            const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - headerOffset;
-            window.scrollTo({ top: targetTop, behavior: 'smooth' });
-          }
-        });
-      }
-
       track.appendChild(card);
     });
   }
+}
 
-  // ── 2. ANIMAÇÃO DE LOOP INFINITO DO MARQUEE ──
+/**
+ * Configura o loop contínuo e a desaceleração no hover de um marquee
+ */
+function setupMarqueeAnimation(container, track, itemsCount, direction = 'normal') {
   let marqueeTween = null;
+  const REPETITIONS = 4;
 
-  function setupMarquee() {
+  function run() {
     if (reducedMotion) return;
 
     if (marqueeTween) {
@@ -90,60 +81,69 @@ export function initProjetos() {
       marqueeTween = null;
     }
 
-    // Mede a largura exata de 1 ciclo completo de projetos usando offsetLeft para precisão absoluta
     const firstCard = track.children[0];
-    const setCard = track.children[projects.length];
-
+    const setCard = track.children[itemsCount];
     let singleSetWidth = 0;
+
     if (firstCard && setCard) {
       singleSetWidth = setCard.offsetLeft - firstCard.offsetLeft;
     }
     if (!singleSetWidth || singleSetWidth <= 0) {
       singleSetWidth = track.scrollWidth / REPETITIONS;
     }
-
     if (singleSetWidth <= 0) return;
 
-    gsap.set(track, { x: 0 });
-
-    // Duração proporcional à quantidade de conteúdo (velocidade editorial suave)
     const isMobile = window.innerWidth <= 768;
-    const duration = isMobile ? 24 : 32;
+    // Duração proporcional à quantidade de itens para fluidez harmônica
+    const duration = isMobile ? 22 : 30;
 
-    marqueeTween = gsap.to(track, {
-      x: -singleSetWidth,
-      duration: duration,
-      ease: 'none',
-      repeat: -1,
-    });
+    if (direction === 'reverse') {
+      // Direção contrária: da esquerda para a direita
+      gsap.set(track, { x: -singleSetWidth });
+      marqueeTween = gsap.to(track, {
+        x: 0,
+        duration: duration,
+        ease: 'none',
+        repeat: -1,
+      });
+    } else {
+      // Direção padrão: da direita para a esquerda
+      gsap.set(track, { x: 0 });
+      marqueeTween = gsap.to(track, {
+        x: -singleSetWidth,
+        duration: duration,
+        ease: 'none',
+        repeat: -1,
+      });
+    }
   }
 
-  // Inicializa imediatamente e reexecuta em momentos-chave para garantir medição correta
-  setupMarquee();
-  requestAnimationFrame(setupMarquee);
+  // Inicializações e recálculos precisos
+  run();
+  requestAnimationFrame(run);
 
   if (document.readyState === 'complete') {
-    setupMarquee();
+    run();
   } else {
-    window.addEventListener('load', setupMarquee);
+    window.addEventListener('load', run);
   }
 
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(setupMarquee);
+    document.fonts.ready.then(run);
   }
 
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(setupMarquee, 150);
+    resizeTimer = setTimeout(run, 150);
   });
 
-  // ── 3. DESACELERAÇÃO SUAVE AO PASSAR O MOUSE (Hover Slowdown) ──
+  // Desaceleração suave no hover
   container.addEventListener('mouseenter', () => {
     if (marqueeTween && !reducedMotion) {
       gsap.to(marqueeTween, {
-        timeScale: 0.2, // desacelera para 20% da velocidade original
-        duration: 0.65,
+        timeScale: 0.2,
+        duration: 0.5,
         ease: 'power2.out',
       });
     }
@@ -152,18 +152,42 @@ export function initProjetos() {
   container.addEventListener('mouseleave', () => {
     if (marqueeTween && !reducedMotion) {
       gsap.to(marqueeTween, {
-        timeScale: 1.0, // retoma à velocidade padrão suavemente
-        duration: 0.65,
+        timeScale: 1.0,
+        duration: 0.5,
         ease: 'power2.out',
       });
     }
   });
 
-  // ── 4. ESTADO DO CABEÇALHO DA SEÇÃO ──
+  return { run };
+}
+
+export function initProjetos() {
+  const section = document.getElementById('projetos');
+  if (!section) return;
+
+  const track1 = section.querySelector('#projetos-track');
+  const container1 = section.querySelector('.marquee-row-1') || section.querySelector('.projetos-marquee-container');
+
+  const track2 = section.querySelector('#cardapios-track');
+  const container2 = section.querySelector('.marquee-row-2') || section.querySelector('.cardapios-marquee-container');
+
+  const title = section.querySelector('.projetos-title');
+
+  // ── 1. FILEIRA 1: PROJETOS / WEBSITES (Direita para Esquerda) ──
+  if (container1 && track1) {
+    createCards(track1, projects, 4);
+    setupMarqueeAnimation(container1, track1, projects.length, 'normal');
+  }
+
+  // ── 2. FILEIRA 2: CARDÁPIOS DIGITAIS (Esquerda para Direita) ──
+  if (container2 && track2) {
+    createCards(track2, cardapios, 4);
+    setupMarqueeAnimation(container2, track2, cardapios.length, 'reverse');
+  }
+
+  // ── 3. ESTADO DO TÍTULO DA SEÇÃO ──
   if (title) {
     gsap.set(title, { opacity: 1, y: 0 });
-  }
-  if (tag) {
-    gsap.set(tag, { opacity: 1, y: 0 });
   }
 }

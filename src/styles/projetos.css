@@ -1,7 +1,10 @@
 /* ==========================================================
-   PROJETOS – Marquee contínuo e infinito de projetos
+   PROJETOS – Marquee contínuo e infinito (Duas fileiras)
+   Fileira 1: Projetos / Landing Pages (Direita -> Esquerda)
+   Fileira 2: Cardápios Digitais / Delivery (Esquerda -> Direita)
    Estética minimalista, editorial e focada nas imagens.
    Desaceleração suave no hover e link direto ao clicar.
+   Ajustado para caber perfeitamente no palco de 100vh.
    ========================================================== */
 
 #projetos {
@@ -11,7 +14,7 @@
   width: 100%;
   height: 100%;
   background: transparent;
-  padding: 0;
+  padding: clamp(8px, 1.5vh, 20px) 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -19,7 +22,7 @@
   align-items: center;
   z-index: 1;
   opacity: 0;
-  transform: scale(0.9);
+  transform: scale(0.92);
   pointer-events: none;
   scroll-margin-top: 80px;
   will-change: transform, opacity;
@@ -38,7 +41,7 @@
   }
 }
 
-/* ── Cabeçalho da seção (Centralizado) ── */
+/* ── Cabeçalho da seção (Centralizado e compacto) ── */
 .projetos-header {
   width: 100%;
   max-width: 1600px;
@@ -49,7 +52,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: clamp(20px, 3.5vh, 40px);
+  margin-bottom: clamp(8px, 1.4vh, 18px);
   z-index: 2;
 }
 
@@ -66,28 +69,28 @@
 .projetos-title {
   font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
   font-weight: 800;
-  font-size: clamp(2.5rem, 5.5vw, 5.5rem);
-  letter-spacing: -0.05em;
-  line-height: 1.0;
+  font-size: clamp(1.6rem, 2.8vw, 2.8rem);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
   color: var(--white);
   margin: 0;
   text-align: center;
 }
 
 /* ═══════════════════════════════════════════════
-   MARQUEE DE PROJETOS (Loop Infinito)
+   MARQUEE DE PROJETOS & CARDÁPIOS (Duas Fileiras)
 ═══════════════════════════════════════════════ */
 .projetos-marquee-container {
   position: relative;
   width: 100%;
   overflow: hidden;
   user-select: none;
-  padding: 24px 0 36px 0;
+  padding: clamp(3px, 0.6vh, 6px) 0;
   display: flex;
   align-items: center;
-  /* Máscara com desvanecimento lateral sutil */
-  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  /* Máscara com desvanecimento lateral suave */
+  mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
   cursor: grab;
 }
 
@@ -98,36 +101,36 @@
 .projetos-marquee-track {
   display: flex;
   align-items: center;
-  gap: clamp(20px, 3vw, 40px);
+  gap: clamp(12px, 1.8vw, 20px);
   width: max-content;
   will-change: transform;
 }
 
-/* ── Card Individual de Projeto (Link Clicável) ── */
+/* ── Card Individual de Projeto (Redimensionado para caber em 100vh) ── */
 .projeto-marquee-card {
   position: relative;
   display: block;
   text-decoration: none;
-  width: clamp(340px, 42vw, 640px);
-  aspect-ratio: 16 / 10;
-  border-radius: 20px;
+  width: clamp(230px, 24vw, 360px);
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background-color: #0c0c0c;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
   flex-shrink: 0;
   outline: none;
   transition:
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .projeto-marquee-card:hover,
 .projeto-marquee-card:focus-visible {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
   border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 255, 255, 0.1);
 }
 
 .projeto-card-img-wrap {
@@ -155,30 +158,30 @@
 /* ── Badge / Etiqueta Flutuante ao passar o mouse ── */
 .projeto-card-badge {
   position: absolute;
-  bottom: 18px;
-  right: 18px;
+  bottom: 10px;
+  right: 10px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background-color: rgba(10, 10, 10, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 9999px;
   color: #FFFFFF;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(6px);
   transition:
-    opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
 }
 
 .projeto-marquee-card:hover .projeto-card-badge,
@@ -190,7 +193,8 @@
 .projeto-card-arrow {
   display: inline-block;
   color: var(--white);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 11px;
+  transition: transform 0.3s ease;
 }
 
 .projeto-marquee-card:hover .projeto-card-arrow {
@@ -198,50 +202,37 @@
 }
 
 /* ═══════════════════════════════════════════════
-   RESPONSIVIDADE
+   RESPONSIVIDADE (Tablets e Smartphones)
 ═══════════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .projetos-header {
-    padding: 0 32px;
-  }
-
-  .projeto-marquee-card {
-    width: clamp(320px, 48vw, 540px);
-    border-radius: 18px;
-  }
-}
-
 @media (max-width: 768px) {
-  #projetos {
-    padding: 10vh 0;
-    min-height: auto;
-  }
-
   .projetos-header {
     padding: 0 20px;
-    margin-bottom: 32px;
+    margin-bottom: 6px;
   }
 
   .projetos-title {
-    font-size: clamp(2rem, 8vw, 3rem);
+    font-size: 1.45rem;
   }
 
   .projeto-marquee-card {
-    width: clamp(280px, 72vw, 380px);
-    border-radius: 16px;
+    width: clamp(200px, 52vw, 260px);
+    border-radius: 10px;
+  }
+
+  .projetos-marquee-container {
+    padding: 2px 0;
   }
 
   .projeto-card-badge {
     opacity: 1;
-    transform: translateY(0);
-    padding: 6px 12px;
-    font-size: 10px;
-    bottom: 12px;
-    right: 12px;
+    transform: none;
+    font-size: 9px;
+    padding: 3px 7px;
+    bottom: 6px;
+    right: 6px;
   }
 }
 
-/* Prevenção para reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .projetos-marquee-track {
     animation: none !important;

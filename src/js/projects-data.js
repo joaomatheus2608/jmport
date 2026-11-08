@@ -51,3 +51,36 @@ export const projects = [
     image: '/assets/projetos/seu-projeto.svg',
   },
 ];
+
+/**
+ * Cardápios Digitais / Delivery
+ */
+export const cardapios = [
+  {
+    slug: 'pizza-frita-ch',
+    name: 'Pizza Frita do CH',
+    category: 'CARDÁPIO DIGITAL · DELIVERY',
+    description: 'Cardápio digital para delivery e pedidos online da Pizza Frita do CH.',
+    tags: ['Delivery', 'Cardápio Digital', 'Fast Food'],
+    url: 'https://pizzafritadoch.delivery',
+    image: '/assets/projetos/pizza-frita-ch.jpg',
+  },
+  {
+    slug: 'mago-sushi',
+    name: 'Mago Sushi',
+    category: 'CARDÁPIO DIGITAL · DELIVERY',
+    description: 'Cardápio digital para delivery e retirada da Mago Sushi Artesanal.',
+    tags: ['Delivery', 'Cardápio Digital', 'Sushi Japonês'],
+    url: 'https://magosushi.delivery',
+    image: '/assets/projetos/mago-sushi.jpg',
+  },
+  {
+    slug: 'boy-degusta',
+    name: 'Hamburgueria Boy Degusta',
+    category: 'CARDÁPIO DIGITAL · DELIVERY',
+    description: 'Cardápio digital para delivery da Hamburgueria Boy Degusta.',
+    tags: ['Delivery', 'Cardápio Digital', 'Hamburgueria'],
+    url: 'https://boydegusta.delivery',
+    image: '/assets/projetos/boy-degusta.jpg',
+  },
+];
