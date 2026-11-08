@@ -24,9 +24,9 @@ export function initProjetos() {
 
   if (!container || !track) return;
 
-  // ── 1. GERAÇÃO DOS CARDS (3 repetições completas para loop infinito contínuo) ──
+  // ── 1. GERAÇÃO DOS CARDS (4 repetições completas para cobertura total da tela) ──
   track.innerHTML = '';
-  const REPETITIONS = 3;
+  const REPETITIONS = 4;
 
   for (let r = 0; r < REPETITIONS; r++) {
     projects.forEach((proj) => {
@@ -83,16 +83,24 @@ export function initProjetos() {
   let marqueeTween = null;
 
   function setupMarquee() {
+    if (reducedMotion) return;
+
     if (marqueeTween) {
       marqueeTween.kill();
       marqueeTween = null;
     }
 
-    if (reducedMotion) return;
+    // Mede a largura exata de 1 ciclo completo de projetos usando offsetLeft para precisão absoluta
+    const firstCard = track.children[0];
+    const setCard = track.children[projects.length];
 
-    // Mede a largura exata de 1 ciclo completo de projetos
-    const totalWidth = track.scrollWidth;
-    const singleSetWidth = totalWidth / REPETITIONS;
+    let singleSetWidth = 0;
+    if (firstCard && setCard) {
+      singleSetWidth = setCard.offsetLeft - firstCard.offsetLeft;
+    }
+    if (!singleSetWidth || singleSetWidth <= 0) {
+      singleSetWidth = track.scrollWidth / REPETITIONS;
+    }
 
     if (singleSetWidth <= 0) return;
 
@@ -100,23 +108,29 @@ export function initProjetos() {
 
     // Duração proporcional à quantidade de conteúdo (velocidade editorial suave)
     const isMobile = window.innerWidth <= 768;
-    const duration = isMobile ? 22 : 32;
+    const duration = isMobile ? 24 : 32;
 
     marqueeTween = gsap.to(track, {
       x: -singleSetWidth,
       duration: duration,
       ease: 'none',
       repeat: -1,
-      modifiers: {
-        x: gsap.utils.unitize((x) => {
-          return parseFloat(x) % singleSetWidth;
-        }),
-      },
     });
   }
 
-  // Inicializa após carregamento e recalcula no resize
+  // Inicializa imediatamente e reexecuta em momentos-chave para garantir medição correta
   setupMarquee();
+  requestAnimationFrame(setupMarquee);
+
+  if (document.readyState === 'complete') {
+    setupMarquee();
+  } else {
+    window.addEventListener('load', setupMarquee);
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(setupMarquee);
+  }
 
   let resizeTimer = null;
   window.addEventListener('resize', () => {

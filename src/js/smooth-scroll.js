@@ -209,16 +209,7 @@ class SmoothScrollEngine {
 
         // Considera altura do header fixo (80px)
         const headerOffset = 72;
-        let targetTop = targetEl.getBoundingClientRect().top + window.scrollY - headerOffset;
-
-        if (href === '#projetos') {
-          const wrapper = document.getElementById('transicao-conceito-projetos');
-          if (wrapper) {
-            const isMobile = window.innerWidth <= 768;
-            const endDistance = window.innerHeight * (isMobile ? 1.4 : 1.8);
-            targetTop = wrapper.getBoundingClientRect().top + window.scrollY + (endDistance * 0.92);
-          }
-        }
+        const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - headerOffset;
 
         if (isSmoothEngine) {
           this.scrollTo(targetTop, 1.2);
