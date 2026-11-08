@@ -106,7 +106,7 @@ export function initConceito() {
         start: 'top top',
         end: endDistance,
         pin: true,
-        scrub: 0.6,
+        scrub: 1.2,
         anticipatePin: 1,
         invalidateOnRefresh: true,
       },

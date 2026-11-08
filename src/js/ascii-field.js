@@ -1,165 +1,127 @@
 /**
  * ascii-field.js
- * Canvas com grade de caracteres animados no fundo do hero.
- * – 45 FPS máximo
- * – Pausa com IntersectionObserver e visibilitychange
- * – Degradê de máscara no canvas via globalAlpha por linha
- * – Reage ao mouse (raio 200px): caracteres "vivos" e mais opacos
- * – prefers-reduced-motion: quadro estático
+ * Canvas de fundo do hero com caracteres animados.
+ * Performance: 24 FPS máx, desativado no mobile, pausa fora de tela.
  */
 
-const CHARS = ['0', '1', '#', '@', '8', 'S', 'X', '+', '·', '=', '/'];
-const CELL_W = 18;
-const CELL_H = 22;
-const BASE_OPACITY = 0.05;
-const MOUSE_RADIUS = 200;
-const MOUSE_OPACITY = 0.55;
-const WAVE_PERIOD = 9000; // ms
-const CHAR_SWAP_INTERVAL = 80; // ms
-const TARGET_FPS = 45;
+const CHARS = ['0', '1', '#', '@', 'S', '+', '·', '=', '/'];
+const CELL_W = 22;
+const CELL_H = 26;
+const BASE_OPACITY   = 0.045;
+const MOUSE_OPACITY  = 0.5;
+const MOUSE_RADIUS   = 180;
+const WAVE_PERIOD    = 10000;
+const TARGET_FPS     = 24;
 const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
 export function initAsciiField(canvas) {
-  const ctx = canvas.getContext('2d');
+  // Desativa completamente no mobile para não desperdiçar GPU
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
+  if (isMobile) {
+    canvas.style.display = 'none';
+    return;
+  }
+
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ctx = canvas.getContext('2d');
 
-  let cols = 0, rows = 0;
-  // grade: { char, nextSwap } por célula
-  let grid = [];
-  let raf = null;
-  let lastFrame = 0;
-  let lastSwap = 0;
-  let running = true;
+  // DPR com teto de 1.5 para economizar memória GPU
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
-  // posição do mouse em coordenadas do canvas (escala sem DPR)
+  let cols = 0, rows = 0, grid = [];
+  let raf = null, lastFrame = 0, running = true;
   let mouseX = -9999, mouseY = -9999;
 
-  // DPR com teto de 2 para performance
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-  /* ── Configuração do canvas ── */
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width  = rect.width  * dpr;
-    canvas.height = rect.height * dpr;
+    canvas.width  = Math.round(rect.width  * dpr);
+    canvas.height = Math.round(rect.height * dpr);
     canvas.style.width  = rect.width  + 'px';
     canvas.style.height = rect.height + 'px';
-    ctx.scale(dpr, dpr);
-
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cols = Math.ceil(rect.width  / CELL_W) + 1;
     rows = Math.ceil(rect.height / CELL_H) + 1;
     buildGrid();
   }
 
   function buildGrid() {
+    const now = Date.now();
     grid = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => ({
         char: randomChar(),
-        nextSwap: Date.now() + Math.random() * CHAR_SWAP_INTERVAL,
+        nextSwap: now + Math.random() * 3000,
       }))
     );
   }
 
   function randomChar() {
-    return CHARS[Math.floor(Math.random() * CHARS.length)];
+    return CHARS[(Math.random() * CHARS.length) | 0];
   }
 
-  /* ── Render ── */
   function draw(now) {
-    const canvasW = canvas.width  / dpr;
-    const canvasH = canvas.height / dpr;
+    const W = canvas.width  / dpr;
+    const H = canvas.height / dpr;
 
-    ctx.clearRect(0, 0, canvasW, canvasH);
-    ctx.font = `400 13px 'JetBrains Mono', monospace`;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = `400 12px 'JetBrains Mono', monospace`;
     ctx.textBaseline = 'top';
+    ctx.fillStyle = '#8a8a8a';
 
-    // onda lenta baseada no tempo
-    const wavePhase = (now % WAVE_PERIOD) / WAVE_PERIOD; // 0..1
+    const wavePhase = (now % WAVE_PERIOD) / WAVE_PERIOD;
 
     for (let r = 0; r < rows; r++) {
       const y = r * CELL_H;
-      // fração vertical 0 (topo) → 1 (base)
-      const vFrac = y / canvasH;
-
-      // máscara: some totalmente em 65% da altura (alpha 1 no topo → 0 em 65%)
-      const maskAlpha = Math.max(0, 1 - (vFrac / 0.65));
-      if (maskAlpha <= 0) continue;
+      const vFrac  = y / H;
+      const maskAlpha = Math.max(0, 1 - vFrac / 0.6);
+      if (maskAlpha <= 0) break; // linhas abaixo também serão 0
 
       for (let c = 0; c < cols; c++) {
-        const x = c * CELL_W;
+        const x    = c * CELL_W;
         const cell = grid[r][c];
 
-        // distância ao mouse
-        const dx = x - mouseX;
-        const dy = y - mouseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const inRange = dist < MOUSE_RADIUS;
-
-        // troca de char: perto do mouse troca mais rápido
-        if (inRange && now >= cell.nextSwap) {
+        // Troca de char baseada em tempo (simples, sem sqrt por célula fora do raio)
+        if (now >= cell.nextSwap) {
           cell.char = randomChar();
-          cell.nextSwap = now + Math.random() * CHAR_SWAP_INTERVAL;
-        } else if (!inRange && now >= cell.nextSwap + CHAR_SWAP_INTERVAL * 20) {
-          // longe: troca bem raramente
-          cell.char = randomChar();
-          cell.nextSwap = now + Math.random() * CHAR_SWAP_INTERVAL * 30;
+          cell.nextSwap = now + 2000 + Math.random() * 4000;
         }
 
-        // opacidade: onda suave + influência do mouse
-        const wave = 0.5 + 0.5 * Math.sin(
-          (c / cols + r / rows + wavePhase) * Math.PI * 4
-        );
-        let opacity = BASE_OPACITY + wave * 0.04;
+        // Distância ao mouse só perto do mouse
+        let opacity = BASE_OPACITY + 0.02 * Math.sin((c / cols + r / rows + wavePhase) * Math.PI * 3);
 
-        if (inRange) {
-          const t = 1 - dist / MOUSE_RADIUS;
-          opacity = opacity + (MOUSE_OPACITY - opacity) * t * t;
+        const dx = x - mouseX;
+        const dy = y - mouseY;
+        if (Math.abs(dx) < MOUSE_RADIUS && Math.abs(dy) < MOUSE_RADIUS) {
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MOUSE_RADIUS) {
+            const t = 1 - dist / MOUSE_RADIUS;
+            opacity = opacity + (MOUSE_OPACITY - opacity) * t * t;
+
+            // Troca rápida perto do mouse
+            if (now >= cell.nextSwap - 3500) {
+              cell.char = randomChar();
+              cell.nextSwap = now + 60 + Math.random() * 80;
+            }
+          }
         }
 
         ctx.globalAlpha = opacity * maskAlpha;
-        // cor: gray-400 = #8a8a8a
-        ctx.fillStyle = '#8a8a8a';
         ctx.fillText(cell.char, x, y);
       }
     }
     ctx.globalAlpha = 1;
   }
 
-  /* ── Loop de animação ── */
   function loop(now) {
     if (!running) return;
     raf = requestAnimationFrame(loop);
-
     if (now - lastFrame < FRAME_INTERVAL) return;
     lastFrame = now;
-
-    if (!reducedMotion) {
-      draw(now);
-    }
+    draw(now);
   }
 
-  /* ── Quadro estático para reduced-motion ── */
-  function staticFrame() {
-    draw(0);
-  }
-
-  /* ── Rastreamento do mouse ── */
-  function onMouseMove(e) {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = e.clientX - rect.left;
-    mouseY = e.clientY - rect.top;
-  }
-
-  function onMouseLeave() {
-    mouseX = -9999;
-    mouseY = -9999;
-  }
-
-  /* ── Pause / Resume ── */
   function pause() {
     running = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
   }
 
   function resume() {
@@ -168,42 +130,35 @@ export function initAsciiField(canvas) {
     raf = requestAnimationFrame(loop);
   }
 
-  /* ── IntersectionObserver: pausa quando fora da tela ── */
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) resume();
-      else pause();
-    });
-  }, { threshold: 0 });
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach(e => e.isIntersecting ? resume() : pause()),
+    { threshold: 0 }
+  );
 
-  /* ── visibilitychange ── */
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) pause();
-    else resume();
-  });
+  document.addEventListener('visibilitychange', () => document.hidden ? pause() : resume());
 
-  /* ── Resize com debounce ── */
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      ctx.resetTransform();
-      resize();
-    }, 150);
-  });
+    resizeTimer = setTimeout(() => { ctx.setTransform(1,0,0,1,0,0); resize(); }, 200);
+  }, { passive: true });
 
-  /* ── Mouse ── */
-  canvas.parentElement.addEventListener('mousemove', onMouseMove);
-  canvas.parentElement.addEventListener('mouseleave', onMouseLeave);
+  canvas.parentElement.addEventListener('mousemove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    mouseX = e.clientX - r.left;
+    mouseY = e.clientY - r.top;
+  }, { passive: true });
 
-  /* ── Inicialização ── */
+  canvas.parentElement.addEventListener('mouseleave', () => {
+    mouseX = -9999; mouseY = -9999;
+  }, { passive: true });
+
   resize();
   io.observe(canvas.parentElement);
 
   if (reducedMotion) {
-    staticFrame();
+    draw(0);
   } else {
     raf = requestAnimationFrame(loop);
   }
 }
-
