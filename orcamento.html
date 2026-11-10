@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+
+  <title>Orçamento Rápido | Matheus Dev</title>
+  <meta name="description" content="Responda 5 perguntas rápidas e receba seu orçamento personalizado hoje direto no WhatsApp." />
+
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/src/styles/tokens.css" />
+  <link rel="stylesheet" href="/src/styles/orcamento-form.css" />
+</head>
+<body>
+
+  <!-- Canvas Ribbon Glow sutil de fundo geral -->
+  <canvas id="orc-canvas" aria-hidden="true"></canvas>
+
+  <main class="orc-wrapper" role="main">
+    
+    <!-- Topo simplificado e focado -->
+    <header class="orc-headline">
+      <div class="orc-logo" aria-label="Matheus Dev">
+        <img src="/assets/logo-jm.jpg" alt="Logo JM" class="orc-logo-img" />
+        <span class="orc-logo-label">MATHEUS DEV</span>
+      </div>
+      <h1>Responda 5 perguntas rápidas e receba seu orçamento hoje</h1>
+      <p>Leva menos de 1 minuto. Suas respostas vão direto para o atendimento.</p>
+    </header>
+
+    <!-- Card principal com efeito Ribbon Glow -->
+    <section class="orc-card" id="orc-card" aria-label="Formulário de Orçamento">
+      <!-- Canvas Ribbon Glow específico dentro do card -->
+      <canvas id="orc-card-canvas" class="orc-card-canvas" aria-hidden="true"></canvas>
+
+      <div class="orc-card-inner">
+        
+        <!-- Barra de Progresso Superior -->
+        <div class="orc-progress-wrap" aria-live="polite">
+          <div class="orc-progress-label">
+            <span>Progresso</span>
+            <span id="orc-progress-label">1 / 5</span>
+          </div>
+          <div class="orc-progress-track">
+            <div class="orc-progress-bar" id="orc-progress-bar" style="width: 20%;"></div>
+          </div>
+        </div>
+
+        <form id="orc-form" novalidate onsubmit="return false;">
+
+          <!-- ETAPA 1: Nome -->
+          <div class="orc-step active" data-step="1">
+            <div class="orc-step-num">Pergunta 01 de 05</div>
+            <label for="orc-input-1" class="orc-step-question">Qual é o seu nome?</label>
+            <div class="orc-input-wrap">
+              <input
+                type="text"
+                id="orc-input-1"
+                class="orc-input"
+                placeholder="Digite seu nome completo"
+                autocomplete="name"
+                required
+              />
+              <span class="orc-error" id="orc-error-1"></span>
+            </div>
+            <button type="button" class="orc-btn-next">
+              <span>Continuar</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <!-- ETAPA 2: WhatsApp -->
+          <div class="orc-step" data-step="2">
+            <div class="orc-step-nav">
+              <button type="button" class="orc-btn-back">
+                <span aria-hidden="true">←</span>
+                <span>Voltar</span>
+              </button>
+              <div class="orc-step-num">Pergunta 02 de 05</div>
+            </div>
+            <label for="orc-input-2" class="orc-step-question">Qual é o seu WhatsApp?</label>
+            <div class="orc-input-wrap">
+              <input
+                type="tel"
+                id="orc-input-2"
+                class="orc-input"
+                placeholder="(DDD) 99999-9999"
+                autocomplete="tel"
+                maxlength="15"
+                required
+              />
+              <span class="orc-error" id="orc-error-2"></span>
+            </div>
+            <button type="button" class="orc-btn-next">
+              <span>Continuar</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <!-- ETAPA 3: Tipo de site -->
+          <div class="orc-step" data-step="3">
+            <div class="orc-step-nav">
+              <button type="button" class="orc-btn-back">
+                <span aria-hidden="true">←</span>
+                <span>Voltar</span>
+              </button>
+              <div class="orc-step-num">Pergunta 03 de 05</div>
+            </div>
+            <p class="orc-step-question">Que tipo de site você precisa?</p>
+            <div class="orc-choices" role="radiogroup" aria-label="Tipo de site">
+              <button type="button" class="orc-choice" data-choice="tipo" data-value="Site institucional">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Site institucional</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="tipo" data-value="Portfólio">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Portfólio</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="tipo" data-value="Loja virtual">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Loja virtual</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="tipo" data-value="Landing page">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Landing page</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="tipo" data-value="Ainda não sei">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Ainda não sei</span>
+              </button>
+            </div>
+            <span class="orc-error" id="orc-error-3"></span>
+            <button type="button" class="orc-btn-next">
+              <span>Continuar</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <!-- ETAPA 4: Ramo / Negócio -->
+          <div class="orc-step" data-step="4">
+            <div class="orc-step-nav">
+              <button type="button" class="orc-btn-back">
+                <span aria-hidden="true">←</span>
+                <span>Voltar</span>
+              </button>
+              <div class="orc-step-num">Pergunta 04 de 05</div>
+            </div>
+            <label for="orc-input-4" class="orc-step-question">Qual é o seu ramo/negócio?</label>
+            <div class="orc-input-wrap">
+              <input
+                type="text"
+                id="orc-input-4"
+                class="orc-input"
+                placeholder="Ex.: Advocacia, Restaurante, Moda, etc."
+                required
+              />
+              <span class="orc-error" id="orc-error-4"></span>
+            </div>
+            <button type="button" class="orc-btn-next">
+              <span>Continuar</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <!-- ETAPA 5: Investimento -->
+          <div class="orc-step" data-step="5">
+            <div class="orc-step-nav">
+              <button type="button" class="orc-btn-back">
+                <span aria-hidden="true">←</span>
+                <span>Voltar</span>
+              </button>
+              <div class="orc-step-num">Pergunta 05 de 05</div>
+            </div>
+            <p class="orc-step-question">Qual investimento você pensa para o site?</p>
+            <div class="orc-choices" role="radiogroup" aria-label="Investimento planejado">
+              <button type="button" class="orc-choice" data-choice="investimento" data-value="Até R$ 1.000">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Até R$ 1.000</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="investimento" data-value="R$ 1.000 a R$ 2.500">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>R$ 1.000 a R$ 2.500</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="investimento" data-value="R$ 2.500 a R$ 5.000">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>R$ 2.500 a R$ 5.000</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="investimento" data-value="Acima de R$ 5.000">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Acima de R$ 5.000</span>
+              </button>
+              <button type="button" class="orc-choice" data-choice="investimento" data-value="Ainda não sei">
+                <span class="orc-choice-icon" aria-hidden="true"></span>
+                <span>Ainda não sei</span>
+              </button>
+            </div>
+            <span class="orc-error" id="orc-error-5"></span>
+            <button type="button" class="orc-btn-next">
+              <span>Continuar</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <!-- ETAPA FINAL: Resumo & Confirmação -->
+          <div class="orc-step" data-step="summary">
+            <div class="orc-step-nav">
+              <button type="button" class="orc-btn-back">
+                <span aria-hidden="true">←</span>
+                <span>Revisar respostas</span>
+              </button>
+              <div class="orc-step-num">Pronto para envio</div>
+            </div>
+            
+            <h2 class="orc-step-question">Revise suas informações</h2>
+
+            <div class="orc-summary" aria-label="Resumo das respostas">
+              <div class="orc-summary-row">
+                <span class="orc-summary-label">Nome:</span>
+                <span class="orc-summary-value" id="sum-nome">-</span>
+              </div>
+              <div class="orc-summary-row">
+                <span class="orc-summary-label">WhatsApp:</span>
+                <span class="orc-summary-value" id="sum-whatsapp">-</span>
+              </div>
+              <div class="orc-summary-row">
+                <span class="orc-summary-label">Tipo de site:</span>
+                <span class="orc-summary-value" id="sum-tipo">-</span>
+              </div>
+              <div class="orc-summary-row">
+                <span class="orc-summary-label">Ramo:</span>
+                <span class="orc-summary-value" id="sum-ramo">-</span>
+              </div>
+              <div class="orc-summary-row">
+                <span class="orc-summary-label">Investimento:</span>
+                <span class="orc-summary-value" id="sum-investimento">-</span>
+              </div>
+            </div>
+
+            <a
+              href="#"
+              id="orc-btn-confirm"
+              class="orc-btn-confirm"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Confirmar formulário e abrir WhatsApp"
+            >
+              <svg class="orc-wpp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              <span>Confirmar formulário</span>
+            </a>
+          </div>
+
+        </form>
+
+      </div>
+    </section>
+
+    <footer class="orc-footer">
+      <span>🔒 Seus dados estão seguros e serão usados exclusivamente para seu atendimento.</span>
+    </footer>
+
+  </main>
+
+  <script type="module" src="/src/js/orcamento-form.js"></script>
+</body>
+</html>

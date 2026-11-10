@@ -1,0 +1,502 @@
+/* =========================================================
+   ORÇAMENTO – Página de captação por tráfego pago
+   Estética idêntica ao site principal: #050505, branco, mono
+   Formulário em etapas, card com Ribbon Glow no fundo.
+   ========================================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #050505;
+  --white:    #FFFFFF;
+  --gray-900: #0f0f0f;
+  --gray-800: #1a1a1a;
+  --gray-600: #3a3a3a;
+  --gray-400: #6a6a6a;
+  --gray-300: #8a8a8a;
+  --accent:   #FFFFFF;
+  --radius-pill: 9999px;
+  --radius-card: 20px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 40px;
+  background-color: var(--bg);
+  position: relative;
+}
+
+/* ── Canvas ribbon glow de fundo ── */
+#orc-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Wrapper central ── */
+.orc-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ── Logo / Marca no topo ── */
+.orc-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.orc-logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+
+.orc-logo-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-300);
+}
+
+/* ── Headline ── */
+.orc-headline {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.orc-headline h1 {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+
+.orc-headline p {
+  font-size: 0.95rem;
+  color: var(--gray-300);
+  line-height: 1.5;
+}
+
+/* ── Card principal com ribbon glow ── */
+.orc-card {
+  position: relative;
+  width: 100%;
+  background-color: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.6),
+    0 32px 80px rgba(0,0,0,0.85),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+}
+
+/* Canvas ribbon glow interno do card */
+.orc-card-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  display: block;
+}
+
+/* Conteúdo acima do canvas */
+.orc-card-inner {
+  position: relative;
+  z-index: 1;
+  padding: clamp(28px, 5vw, 48px) clamp(24px, 4vw, 40px);
+}
+
+/* ── Barra de progresso ── */
+.orc-progress-wrap {
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orc-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+.orc-progress-track {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.orc-progress-bar {
+  height: 100%;
+  background: var(--white);
+  border-radius: 999px;
+  transition: width 0.4s var(--ease-out);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* ── Etapas ── */
+.orc-step {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  animation: stepIn 0.3s var(--ease-out) both;
+}
+
+.orc-step.active {
+  display: flex;
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.orc-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+.orc-step-question {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.15rem, 4vw, 1.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+/* ── Campo de texto ── */
+.orc-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orc-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: var(--white);
+  outline: none;
+  transition:
+    border-color 0.25s ease,
+    background   0.25s ease,
+    box-shadow   0.25s ease;
+  -webkit-appearance: none;
+  caret-color: var(--white);
+}
+
+.orc-input::placeholder { color: var(--gray-400); }
+
+.orc-input:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.07);
+}
+
+.orc-input.has-error {
+  border-color: rgba(255, 90, 90, 0.7);
+  box-shadow: 0 0 0 3px rgba(255, 90, 90, 0.1);
+}
+
+/* ── Mensagem de erro ── */
+.orc-error {
+  font-size: 0.82rem;
+  color: #ff6b6b;
+  min-height: 1.2em;
+  display: none;
+}
+
+.orc-error.visible { display: block; }
+
+/* ── Botões de escolha ── */
+.orc-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.orc-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--gray-300);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background   0.2s ease,
+    color        0.2s ease,
+    transform    0.2s var(--ease-out);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.orc-choice:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  transform: translateX(3px);
+}
+
+.orc-choice.selected {
+  border-color: var(--white);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+}
+
+.orc-choice-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.orc-choice.selected .orc-choice-icon {
+  border-color: var(--white);
+  background: var(--white);
+}
+
+.orc-choice-icon::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bg);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.orc-choice.selected .orc-choice-icon::after { opacity: 1; }
+
+/* ── Botão avançar ── */
+.orc-btn-next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 28px;
+  background: var(--white);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    transform  0.2s var(--ease-out),
+    box-shadow 0.25s ease;
+  margin-top: 8px;
+}
+
+.orc-btn-next:hover {
+  background: #e8e8e8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,255,255,0.15);
+}
+
+.orc-btn-next:active { transform: translateY(0); }
+
+.orc-btn-next .arrow {
+  font-size: 1.1rem;
+  transition: transform 0.2s var(--ease-out);
+}
+
+.orc-btn-next:hover .arrow { transform: translateX(4px); }
+
+/* ── Voltar ── */
+.orc-btn-back {
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.orc-btn-back:hover { color: var(--white); }
+
+.orc-step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+/* ── Resumo final ── */
+.orc-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+}
+
+.orc-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.orc-summary-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.orc-summary-value {
+  color: var(--white);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Divisor entre linhas do resumo */
+.orc-summary-row + .orc-summary-row {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 12px;
+}
+
+/* ── Botão final (WhatsApp) ── */
+.orc-btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 18px 28px;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background 0.25s ease,
+    transform  0.2s var(--ease-out),
+    box-shadow 0.25s ease;
+  margin-top: 8px;
+}
+
+.orc-btn-confirm:hover {
+  background: #1db954;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+}
+
+.orc-btn-confirm:active { transform: translateY(0); }
+
+.orc-wpp-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ── Rodapé discreto ── */
+.orc-footer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ── Responsividade ── */
+@media (max-width: 480px) {
+  body { padding: 16px 12px 32px; }
+  .orc-card-inner { padding: 24px 20px; }
+  .orc-btn-next, .orc-btn-confirm { padding: 15px 20px; font-size: 0.95rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orc-step { animation: none; }
+  .orc-btn-next:hover, .orc-btn-confirm:hover { transform: none; }
+}
+

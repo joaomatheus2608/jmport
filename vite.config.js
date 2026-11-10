@@ -5,6 +5,12 @@ export default defineConfig({
   publicDir: 'public',
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        orcamento: 'orcamento.html',
+        orcamentoDir: 'orcamento/index.html',
+      },
+    },
   },
 });
-
