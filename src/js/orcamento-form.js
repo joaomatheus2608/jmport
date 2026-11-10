@@ -13,8 +13,8 @@
 import { initRibbonGlow } from './ribbon-glow.js';
 
 // ─── CONFIGURAÇÃO ────────────────────────────────────────
-// Número de atendimento do Matheus (com DDI e DDD)
-const WPP_NUMBER = '5581987734133';
+// Número de atendimento do Matheus (profissional com DDI e DDD)
+const WPP_NUMBER = '5581987279848';
 const TOTAL_STEPS = 5;
 const STORAGE_KEY = 'jm_leads_orcamento';
 
