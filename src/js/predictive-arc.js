@@ -1,10 +1,12 @@
 /**
  * predictive-arc.js
- * Predictive Arc (Originkit) – Portado para Vanilla JS / ES Modules.
- * Renderiza uma malha interativa de pontos em curva/arco WebGL reagindo ao cursor.
+ * Predictive Arc (Originkit) – Otimizado para alta performance.
+ * - MAX_DPR limitado a 1.0
+ * - IntersectionObserver para pausar quando fora do viewport
+ * - visibilitychange para pausar em abas em segundo plano
  */
 
-const MAX_DPR = 2;
+const MAX_DPR = 1.0;
 
 const VERT_SRC = `
 attribute vec2 a_pos;
@@ -73,7 +75,6 @@ function compile(gl, type, src) {
   gl.shaderSource(sh, src);
   gl.compileShader(sh);
   if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-    console.error("PredictiveArc shader:", gl.getShaderInfoLog(sh));
     gl.deleteShader(sh);
     return null;
   }
@@ -98,73 +99,31 @@ function parseColor(input, fb = [1, 1, 1]) {
   }
   const m = str.match(/[\d.]+/g);
   if (m && m.length >= 3) {
-    return [
-      Math.min(255, parseFloat(m[0])) / 255,
-      Math.min(255, parseFloat(m[1])) / 255,
-      Math.min(255, parseFloat(m[2])) / 255,
-    ];
+    return [parseFloat(m[0]) / 255, parseFloat(m[1]) / 255, parseFloat(m[2]) / 255];
   }
   return fb;
 }
 
-function clampN(v, lo, hi) {
-  return v < lo ? lo : v > hi ? hi : v;
-}
-
-const PRESET_DEFAULTS = {
-  background: "#050505",
-  baseColor: "#FFFFFF",
-  accentColor: "#FFFFFF",
-  highlight: "#FFFFFF",
-  density: 174,
-  dotSize: 154,
-  speed: 77,
-  arch: {
-    peak: 100,
-    archHeight: 0,
-    thickness: 297,
-    falloff: 600,
-  },
-  pointer: {
-    radius: 236,
-    enabled: true,
-    strength: 34,
-  },
-};
-
-/**
- * Inicializa o Predictive Arc em um elemento canvas
- */
 export function initPredictiveArc(canvas, container, options = {}) {
   if (!canvas || !container) return null;
 
-  const bg = options.background || PRESET_DEFAULTS.background;
-  const base = options.baseColor || PRESET_DEFAULTS.baseColor;
-  const accent = options.accentColor || PRESET_DEFAULTS.accentColor;
-  const high = options.highlight || PRESET_DEFAULTS.highlight;
-
-  const density = options.density !== undefined ? options.density : PRESET_DEFAULTS.density;
-  const dotSize = options.dotSize !== undefined ? options.dotSize : PRESET_DEFAULTS.dotSize;
-  const speed = options.speed !== undefined ? options.speed : PRESET_DEFAULTS.speed;
-
-  const arch = { ...PRESET_DEFAULTS.arch, ...(options.arch || {}) };
-  const pointer = { ...PRESET_DEFAULTS.pointer, ...(options.pointer || {}) };
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
 
   const v = {
-    bg,
-    base,
-    accent,
-    high,
-    density: Math.round(clampN(density, 40, 320)),
-    dotSize: clampN(dotSize, 20, 400) / 100,
-    speed: clampN(speed, 0, 100) / 50,
-    peak: clampN(arch.peak, 0, 100) / 100,
-    archHeight: clampN(arch.archHeight, 0, 300) / 100,
-    thickness: clampN(arch.thickness, 20, 400) / 100,
-    falloff: clampN(arch.falloff, 50, 600) / 100,
-    pointerEnabled: pointer.enabled !== false,
-    pointerRadius: clampN(pointer.radius, 40, 600),
-    pointerStrength: clampN(pointer.strength, 0, 100) / 100,
+    bg: options.background || "#050505",
+    base: options.baseColor || "#FFFFFF",
+    accent: options.accentColor || "#FFFFFF",
+    high: options.highlight || "#FFFFFF",
+    density: options.density || 174,
+    dotSize: (options.dotSize || 154) / 100,
+    speed: (options.speed || 77) / 100,
+    peak: ((options.arch && options.arch.peak) || 100) / 100,
+    archHeight: ((options.arch && options.arch.archHeight) || 0) / 100,
+    thickness: ((options.arch && options.arch.thickness) || 297) / 100,
+    falloff: ((options.arch && options.arch.falloff) || 600) / 100,
+    pointerRadius: (options.pointer && options.pointer.radius) || 236,
+    pointerEnabled: options.pointer ? options.pointer.enabled !== false : true,
+    pointerStrength: ((options.pointer && options.pointer.strength) || 34) / 100,
   };
 
   const ps = {
@@ -176,26 +135,29 @@ export function initPredictiveArc(canvas, container, options = {}) {
     targetActive: 0,
   };
 
-  function handlePointerMove(e) {
+  const handlePointerMove = (e) => {
     const rect = canvas.getBoundingClientRect();
     ps.targetX = e.clientX - rect.left;
-    ps.targetY = rect.height - (e.clientY - rect.top);
+    ps.targetY = e.clientY - rect.top;
     ps.targetActive = 1;
-  }
+  };
 
-  function handlePointerLeave() {
+  const handlePointerLeave = () => {
     ps.targetActive = 0;
-  }
+  };
 
   container.addEventListener("pointermove", handlePointerMove, { passive: true });
   container.addEventListener("pointerleave", handlePointerLeave, { passive: true });
-  container.addEventListener("pointercancel", handlePointerLeave, { passive: true });
 
-  const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false });
-  if (!gl) {
-    console.warn("PredictiveArc: WebGL indisponível");
-    return null;
-  }
+  const gl = canvas.getContext("webgl", {
+    antialias: false,
+    alpha: false,
+    depth: false,
+    stencil: false,
+    powerPreference: "low-power",
+  });
+
+  if (!gl) return null;
 
   const vs = compile(gl, gl.VERTEX_SHADER, VERT_SRC);
   const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG_SRC);
@@ -207,7 +169,6 @@ export function initPredictiveArc(canvas, container, options = {}) {
   gl.attachShader(prog, fs);
   gl.linkProgram(prog);
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-    console.error("PredictiveArc link:", gl.getProgramInfoLog(prog));
     return null;
   }
   gl.useProgram(prog);
@@ -228,7 +189,8 @@ export function initPredictiveArc(canvas, container, options = {}) {
   let raf = 0;
   let last = performance.now();
   let clock = 0;
-  let isRunning = true;
+  let isRunning = false;
+  let isVisible = false;
 
   const cg = parseColor(v.bg, [0.02, 0.02, 0.02]);
   const cb = parseColor(v.base, [1, 1, 1]);
@@ -236,14 +198,17 @@ export function initPredictiveArc(canvas, container, options = {}) {
   const chh = parseColor(v.high, [1, 1, 1]);
 
   function render(now) {
-    if (!isRunning) return;
+    if (!isRunning || !isVisible) {
+      raf = 0;
+      return;
+    }
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     clock = (clock + dt * 0.9 * v.speed) % 6283;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-    const cw = canvas.clientWidth || 1200;
-    const ch = canvas.clientHeight || 800;
+    const dpr = isMobile ? 0.75 : MAX_DPR;
+    const cw = canvas.clientWidth || 800;
+    const ch = canvas.clientHeight || 500;
     const bw = Math.max(1, Math.round(cw * dpr));
     const bh = Math.max(1, Math.round(ch * dpr));
 
@@ -286,15 +251,53 @@ export function initPredictiveArc(canvas, container, options = {}) {
     raf = requestAnimationFrame(render);
   }
 
-  raf = requestAnimationFrame(render);
+  function start() {
+    if (!isRunning && isVisible) {
+      isRunning = true;
+      last = performance.now();
+      if (!raf) raf = requestAnimationFrame(render);
+    }
+  }
+
+  function pause() {
+    isRunning = false;
+    if (raf) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+  }
+
+  // ── IntersectionObserver: pausa quando fora da viewport ──
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          start();
+        } else {
+          pause();
+        }
+      });
+    },
+    { rootMargin: "100px" }
+  );
+
+  io.observe(container);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pause();
+    } else if (isVisible) {
+      start();
+    }
+  });
 
   return {
     dispose() {
-      isRunning = false;
-      cancelAnimationFrame(raf);
+      pause();
+      io.disconnect();
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
-      container.removeEventListener("pointercancel", handlePointerLeave);
       gl.deleteBuffer(buf);
       gl.deleteProgram(prog);
       gl.deleteShader(vs);
@@ -302,4 +305,3 @@ export function initPredictiveArc(canvas, container, options = {}) {
     },
   };
 }
-

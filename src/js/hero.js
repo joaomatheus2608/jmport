@@ -39,6 +39,21 @@ function initMarquee() {
   wrapper.addEventListener('mouseleave', () => {
     gsap.to(marqueeTween, { timeScale: 1, duration: 0.6, ease: 'power2.out' });
   });
+
+  // Pausa quando o Hero sair da tela
+  const heroEl = document.getElementById('hero');
+  if (heroEl) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          marqueeTween.resume();
+        } else {
+          marqueeTween.pause();
+        }
+      });
+    });
+    io.observe(heroEl);
+  }
 }
 
 /* ─────────────────────────────────────────────

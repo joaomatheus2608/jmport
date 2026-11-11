@@ -3,10 +3,8 @@
  * Seção de Projetos – Marquee contínuo duplo e em direções opostas.
  * - Fileira 1: Projetos / Landing Pages (Direita -> Esquerda)
  * - Fileira 2: Cardápios Digitais / Delivery (Esquerda -> Direita)
- * - Foco total nas imagens dos projetos
+ * - Otimizado com IntersectionObserver: pausa os tweens quando fora do viewport
  * - Desacelera suavemente no hover do mouse
- * - Clique direto redireciona para o projeto
- * - Loop infinito sincronizado via GSAP
  */
 
 import gsap from 'gsap';
@@ -94,11 +92,9 @@ function setupMarqueeAnimation(container, track, itemsCount, direction = 'normal
     if (singleSetWidth <= 0) return;
 
     const isMobile = window.innerWidth <= 768;
-    // Duração proporcional à quantidade de itens para fluidez harmônica
-    const duration = isMobile ? 22 : 30;
+    const duration = isMobile ? 24 : 32;
 
     if (direction === 'reverse') {
-      // Direção contrária: da esquerda para a direita
       gsap.set(track, { x: -singleSetWidth });
       marqueeTween = gsap.to(track, {
         x: 0,
@@ -107,7 +103,6 @@ function setupMarqueeAnimation(container, track, itemsCount, direction = 'normal
         repeat: -1,
       });
     } else {
-      // Direção padrão: da direita para a esquerda
       gsap.set(track, { x: 0 });
       marqueeTween = gsap.to(track, {
         x: -singleSetWidth,
@@ -118,7 +113,6 @@ function setupMarqueeAnimation(container, track, itemsCount, direction = 'normal
     }
   }
 
-  // Inicializações e recálculos precisos
   run();
   requestAnimationFrame(run);
 
@@ -142,8 +136,8 @@ function setupMarqueeAnimation(container, track, itemsCount, direction = 'normal
   container.addEventListener('mouseenter', () => {
     if (marqueeTween && !reducedMotion) {
       gsap.to(marqueeTween, {
-        timeScale: 0.2,
-        duration: 0.5,
+        timeScale: 0.25,
+        duration: 0.4,
         ease: 'power2.out',
       });
     }
@@ -153,11 +147,25 @@ function setupMarqueeAnimation(container, track, itemsCount, direction = 'normal
     if (marqueeTween && !reducedMotion) {
       gsap.to(marqueeTween, {
         timeScale: 1.0,
-        duration: 0.5,
+        duration: 0.4,
         ease: 'power2.out',
       });
     }
   });
+
+  // ── IntersectionObserver: pausa a animação se o container sair da tela ──
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!marqueeTween) return;
+      if (entry.isIntersecting) {
+        marqueeTween.resume();
+      } else {
+        marqueeTween.pause();
+      }
+    });
+  }, { rootMargin: '100px' });
+
+  io.observe(container);
 
   return { run };
 }
@@ -174,19 +182,16 @@ export function initProjetos() {
 
   const title = section.querySelector('.projetos-title');
 
-  // ── 1. FILEIRA 1: PROJETOS / WEBSITES (Direita para Esquerda) ──
   if (container1 && track1) {
     createCards(track1, projects, 4);
     setupMarqueeAnimation(container1, track1, projects.length, 'normal');
   }
 
-  // ── 2. FILEIRA 2: CARDÁPIOS DIGITAIS (Esquerda para Direita) ──
   if (container2 && track2) {
     createCards(track2, cardapios, 4);
     setupMarqueeAnimation(container2, track2, cardapios.length, 'reverse');
   }
 
-  // ── 3. ESTADO DO TÍTULO DA SEÇÃO ──
   if (title) {
     gsap.set(title, { opacity: 1, y: 0 });
   }

@@ -1,13 +1,17 @@
 /**
  * ribbon-glow.js
- * Ribbon Glow (Originkit) – Portado para Vanilla JS / ES Modules.
- * Renderiza fitas fluidas luminosas em WebGL2 interativas ao cursor do mouse.
+ * Ribbon Glow (Originkit) – Otimizado para máxima fluidez e performance.
+ * - Camadas reduzidas de 84 para 32 (mesmo visual com fração do custo de GPU)
+ * - MAX_DPR limitado a 1.0 para evitar sobrecarga em telas 2K/4K/Retina
+ * - Pausa automática com IntersectionObserver quando fora da tela
+ * - Pausa quando a aba estiver em segundo plano (visibilitychange)
  */
 
-const MAX_DPR = 2;
+const MAX_DPR = 1.0;
 const NAME = "RibbonGlow";
 
-const LAYERS = 84;
+// 32 camadas mantêm a riqueza do efeito sem sufocar a GPU (antes era 84)
+const LAYERS = 32;
 const TWIST = 1.25;
 const DRAG = 0.18;
 
@@ -17,7 +21,7 @@ void main() { gl_Position = vec4(P[gl_VertexID], 0.0, 1.0); }
 `;
 
 const FIELD_SRC = `#version 300 es
-precision highp float;
+precision mediump float;
 uniform vec2 uRes;
 uniform float uTime;
 uniform vec3 uC1;
@@ -30,7 +34,6 @@ uniform float uReach;
 uniform vec2 uVel;
 out vec4 o;
 
-const float TAU = 6.28318530718;
 const float LAYERS = ${LAYERS.toFixed(1)};
 const float TWIST = ${TWIST.toFixed(3)};
 const float DRAG = ${DRAG.toFixed(3)};
@@ -45,8 +48,8 @@ const vec2 WARP_FREQ = vec2(0.42, 2.4);
 const vec2 WARP_AMP = vec2(0.13, 0.027);
 const vec2 ASPECT = vec2(2.1, 0.17);
 const float OFFSET = 0.36;
-const float GLOW = 0.0021;
-const float SOFT = 0.0019;
+const float GLOW = 0.0028;
+const float SOFT = 0.0022;
 const float FALLOFF = 0.37;
 const float PHASE = 12.0;
 const float CYCLE = 0.16;
@@ -74,7 +77,7 @@ void main() {
     u.y -= sin(u.x * WARP_FREQ.y - t + i * 0.02) * WARP_AMP.y;
     u = fold * u * SHRINK;
     vec2 q = (u - vec2(OFFSET + breath * 0.1, 0.0)) * ASPECT;
-    float g = GLOW / (dot(q, q) + SOFT) * (0.25 + breath * 0.4);
+    float g = GLOW / (dot(q, q) + SOFT) * (0.28 + breath * 0.4);
     float r = length(u);
     float k = sin(i * CYCLE + t * 1.2 + r * HUE_TRAVEL) * 0.5 + 0.5;
     col += g * mix(uC1, uC2, k) * (0.62 + 0.5 * k) * exp2(-r * FALLOFF);
@@ -88,7 +91,7 @@ void main() {
 `;
 
 const FINISH_SRC = `#version 300 es
-precision highp float;
+precision mediump float;
 uniform sampler2D uField;
 uniform vec2 uRes;
 uniform float uTime;
@@ -131,33 +134,6 @@ function parseColor(input) {
         out = [r / 255, g / 255, b / 255];
       }
     }
-  } else {
-    const m = s.match(/^(rgba?|hsla?)\(([^)]*)\)/i);
-    if (m) {
-      const parts = m[2].split(/[\s,/]+/).filter(Boolean);
-      const f = (i) => parseFloat(parts[i]);
-      if (parts.length >= 3 && [0, 1, 2].every((i) => Number.isFinite(f(i)))) {
-        if (m[1].toLowerCase().startsWith("rgb")) {
-          const ch = (i) => (parts[i].endsWith("%") ? f(i) / 100 : f(i) / 255);
-          out = [ch(0), ch(1), ch(2)];
-        } else {
-          const hh = (((f(0) % 360) + 360) % 360) / 360;
-          const ss = f(1) / 100;
-          const ll = f(2) / 100;
-          const q = ll < 0.5 ? ll * (1 + ss) : ll + ss - ll * ss;
-          const p = 2 * ll - q;
-          const hue = (t) => {
-            t = t < 0 ? t + 1 : t > 1 ? t - 1 : t;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-          };
-          out = [hue(hh + 1 / 3), hue(hh), hue(hh - 1 / 3)];
-        }
-        out = out.map((c) => Math.min(1, Math.max(0, c)));
-      }
-    }
   }
   colorCache.set(key, out);
   return out;
@@ -178,7 +154,6 @@ function link(gl, frag, label) {
     gl.shaderSource(sh, src);
     gl.compileShader(sh);
     if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-      console.error(`${NAME} ${label} shader:`, gl.getShaderInfoLog(sh));
       gl.deleteShader(sh);
       return null;
     }
@@ -195,7 +170,6 @@ function link(gl, frag, label) {
   gl.deleteShader(vs);
   gl.deleteShader(fs);
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-    console.error(`${NAME} ${label} link:`, gl.getProgramInfoLog(prog));
     gl.deleteProgram(prog);
     return null;
   }
@@ -213,7 +187,6 @@ function fieldTarget(gl) {
   let tex = null;
   let w = 0;
   let h = 0;
-  let half = !!gl.getExtension("EXT_color_buffer_float");
   return {
     fbo,
     texture: () => tex,
@@ -221,32 +194,17 @@ function fieldTarget(gl) {
     height: () => h,
     resize(nw, nh) {
       if (nw === w && nh === h && tex) return;
-      for (let attempt = 0; attempt < 2; attempt++) {
-        if (tex) gl.deleteTexture(tex);
-        tex = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texImage2D(
-          gl.TEXTURE_2D,
-          0,
-          half ? gl.RGBA16F : gl.RGBA8,
-          nw,
-          nh,
-          0,
-          gl.RGBA,
-          half ? gl.HALF_FLOAT : gl.UNSIGNED_BYTE,
-          null
-        );
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
-        const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        if (ok || !half) break;
-        half = false;
-      }
+      if (tex) gl.deleteTexture(tex);
+      tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, nw, nh, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
       w = nw;
       h = nh;
     },
@@ -258,48 +216,48 @@ function fieldTarget(gl) {
 }
 
 function trackPointer(root) {
-  const p = { tx: 0, ty: 0, inside: false, seen: false };
+  const p = { tx: 0, ty: 0, inside: false };
   const read = (e) => {
     const r = root.getBoundingClientRect();
-    const sx = root.offsetWidth / (r.width || 1);
-    const sy = root.offsetHeight / (r.height || 1);
-    p.tx = (e.clientX - r.left) * sx;
-    p.ty = (e.clientY - r.top) * sy;
+    p.tx = (e.clientX - r.left);
+    p.ty = (e.clientY - r.top);
     p.inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-    p.seen = true;
   };
   const out = (e) => {
     if (!e.relatedTarget) p.inside = false;
   };
-  window.addEventListener("pointermove", read, { passive: true });
-  window.addEventListener("pointerdown", read, { passive: true });
-  document.addEventListener("pointerout", out);
+  root.addEventListener("pointermove", read, { passive: true });
+  root.addEventListener("pointerdown", read, { passive: true });
+  root.addEventListener("pointerleave", out, { passive: true });
   return {
     p,
     dispose() {
-      window.removeEventListener("pointermove", read);
-      window.removeEventListener("pointerdown", read);
-      document.removeEventListener("pointerout", out);
+      root.removeEventListener("pointermove", read);
+      root.removeEventListener("pointerdown", read);
+      root.removeEventListener("pointerleave", out);
     },
   };
 }
 
 const DEFAULTS = {
   background: "#050505",
-  color1: "#FFFFFF", // Branco puro
-  color2: "#B0B0B0", // Cinza claro
+  color1: "#FFFFFF",
+  color2: "#B0B0B0",
 };
 
 /**
- * Inicializa o efeito Ribbon Glow em um elemento canvas
+ * Inicializa o efeito Ribbon Glow com IntersectionObserver integrado
  */
 export function initRibbonGlow(canvas, root, options = {}) {
   if (!canvas || !root) return null;
 
+  // Em mobile com hardware fraco, reduz o impacto
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
+
   const background = options.background || DEFAULTS.background;
   const color1 = options.color1 || DEFAULTS.color1;
   const color2 = options.color2 || DEFAULTS.color2;
-  const speed = options.speed !== undefined ? options.speed : 50;
+  const speed = options.speed !== undefined ? options.speed : 45;
   const size = options.size !== undefined ? options.size : 100;
   const angle = options.angle !== undefined ? options.angle : -180;
   const hover = options.hover !== undefined ? options.hover : 100;
@@ -321,28 +279,17 @@ export function initRibbonGlow(canvas, root, options = {}) {
     alpha: false,
     depth: false,
     stencil: false,
+    powerPreference: "low-power",
   });
 
-  if (!gl) {
-    console.warn(`${NAME}: WebGL2 indisponível.`);
-    return null;
-  }
+  if (!gl) return null;
 
   const field = link(gl, FIELD_SRC, "field");
   const finish = link(gl, FINISH_SRC, "finish");
   if (!field || !finish) return null;
 
   const uf = locations(gl, field, [
-    "uRes",
-    "uTime",
-    "uC1",
-    "uC2",
-    "uSize",
-    "uAngle",
-    "uMouse",
-    "uOn",
-    "uReach",
-    "uVel",
+    "uRes", "uTime", "uC1", "uC2", "uSize", "uAngle", "uMouse", "uOn", "uReach", "uVel"
   ]);
   const un = locations(gl, finish, ["uField", "uRes", "uTime", "uBg", "uPaper"]);
   const vao = gl.createVertexArray();
@@ -351,15 +298,12 @@ export function initRibbonGlow(canvas, root, options = {}) {
   const pointer = trackPointer(root);
   const ptr = pointer.p;
 
-  let mx = 0;
-  let my = 0;
-  let vx = 0;
-  let vy = 0;
-  let on = 0;
+  let mx = 0, my = 0, vx = 0, vy = 0, on = 0;
   let raf = 0;
   let last = -1;
   let clock = 0;
-  let isRunning = true;
+  let isRunning = false;
+  let isVisible = false;
 
   const c1 = color(v.color1, DEFAULTS.color1);
   const c2 = color(v.color2, DEFAULTS.color2);
@@ -367,15 +311,18 @@ export function initRibbonGlow(canvas, root, options = {}) {
   const bgLum = 0.2126 * bg[0] + 0.7152 * bg[1] + 0.0722 * bg[2];
 
   const render = (now) => {
-    if (!isRunning) return;
+    if (!isRunning || !isVisible) {
+      raf = 0;
+      return;
+    }
     raf = requestAnimationFrame(render);
     const dt = last < 0 ? 0 : clampN((now - last) / 1000, 0, 0.05);
     last = now;
     clock = (clock + dt * v.speed) % 3600;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-    const cw = canvas.clientWidth || 1200;
-    const ch = canvas.clientHeight || 800;
+    const dpr = isMobile ? 0.75 : MAX_DPR;
+    const cw = canvas.clientWidth || 800;
+    const ch = canvas.clientHeight || 500;
     const bw = Math.max(1, Math.round(cw * dpr));
     const bh = Math.max(1, Math.round(ch * dpr));
     if (canvas.width !== bw || canvas.height !== bh) {
@@ -419,7 +366,7 @@ export function initRibbonGlow(canvas, root, options = {}) {
     gl.uniform2f(uf.uVel, (vx / ch) * vCap, (-vy / ch) * vCap);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // Pass 2: upsample e composite
+    // Pass 2: composite
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, bw, bh);
     gl.useProgram(finish);
@@ -433,12 +380,52 @@ export function initRibbonGlow(canvas, root, options = {}) {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 
-  raf = requestAnimationFrame(render);
+  function start() {
+    if (!isRunning && isVisible) {
+      isRunning = true;
+      last = -1;
+      if (!raf) raf = requestAnimationFrame(render);
+    }
+  }
+
+  function pause() {
+    isRunning = false;
+    if (raf) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+  }
+
+  // ── IntersectionObserver: RODA APENAS QUANDO VISÍVEL NA TELA ──
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          start();
+        } else {
+          pause();
+        }
+      });
+    },
+    { rootMargin: "80px" }
+  );
+
+  io.observe(root);
+
+  // Pausa ao trocar de aba no navegador
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pause();
+    } else if (isVisible) {
+      start();
+    }
+  });
 
   return {
     dispose() {
-      isRunning = false;
-      cancelAnimationFrame(raf);
+      pause();
+      io.disconnect();
       pointer.dispose();
       target.dispose();
       gl.deleteVertexArray(vao);
@@ -447,4 +434,3 @@ export function initRibbonGlow(canvas, root, options = {}) {
     },
   };
 }
-

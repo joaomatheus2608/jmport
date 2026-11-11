@@ -1,14 +1,12 @@
 /**
  * cursor.js
- * Cursor customizado com inércia e efeitos "grow" e "drag".
- * – Ativo apenas em pointer:fine (desktop)
- * – mix-blend-mode: difference para inversão de cor
- * – Cresce a 56px em links, botões e [data-cursor="grow"]
- * – Cresce a 84px com texto "ARRASTE" em [data-cursor="drag"]
+ * Cursor customizado de alta performance.
+ * - Sem mix-blend-mode: difference (elimina recomposição forçada da página inteira)
+ * - requestAnimationFrame condicional: para completamente quando o mouse está estático
+ * - Ativo exclusivamente em dispositivos com mouse real (pointer: fine)
  */
 
 export function initCursor() {
-  // Apenas em dispositivos com ponteiro fino (mouse)
   if (!window.matchMedia('(pointer: fine)').matches) return;
 
   const dot = document.createElement('div');
@@ -21,44 +19,50 @@ export function initCursor() {
 
   document.body.appendChild(dot);
 
-  // Injeta o CSS do cursor via JS para manter o CSS modular
   const style = document.createElement('style');
   style.textContent = `
     .custom-cursor {
       position: fixed;
       top: 0;
       left: 0;
-      width: 12px;
-      height: 12px;
-      background: var(--white);
+      width: 10px;
+      height: 10px;
+      background: #FFFFFF;
       border-radius: 50%;
       pointer-events: none;
-      z-index: var(--z-cursor);
-      mix-blend-mode: difference;
-      transform: translate(-50%, -50%);
-      transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out);
+      z-index: 99999;
+      transform: translate3d(-100px, -100px, 0);
+      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), height 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border 0.2s ease;
       will-change: transform;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
     }
     .custom-cursor.is-grown {
-      width: 56px;
-      height: 56px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(2px);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
     }
     .custom-cursor.is-drag {
-      width: 84px;
-      height: 84px;
+      width: 72px;
+      height: 72px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
     }
     .custom-cursor-text {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 500;
+      font-size: 9px;
+      font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--bg);
+      color: #FFFFFF;
       opacity: 0;
-      transition: opacity 0.2s var(--ease-out);
+      transition: opacity 0.18s ease;
       pointer-events: none;
       user-select: none;
     }
@@ -68,33 +72,44 @@ export function initCursor() {
   `;
   document.head.appendChild(style);
 
-  // Posição alvo (posição real do mouse)
   let targetX = -100;
   let targetY = -100;
-  // Posição atual (com inércia)
   let currentX = -100;
   let currentY = -100;
-  const LERP = 0.28;
+  let isTicking = false;
+  const LERP = 0.32;
 
   function lerp(a, b, t) {
     return a + (b - a) * t;
   }
 
-  // Loop de posicionamento com inércia
   function tick() {
     currentX = lerp(currentX, targetX, LERP);
     currentY = lerp(currentY, targetY, LERP);
-    dot.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
-    requestAnimationFrame(tick);
+
+    dot.style.transform = `translate3d(${currentX - dot.offsetWidth / 2}px, ${currentY - dot.offsetHeight / 2}px, 0)`;
+
+    // Se estiver a menos de 0.2px do alvo, encerra o RAF para 0% de uso de CPU
+    if (Math.abs(targetX - currentX) > 0.2 || Math.abs(targetY - currentY) > 0.2) {
+      requestAnimationFrame(tick);
+    } else {
+      isTicking = false;
+    }
   }
 
-  // Atualiza o alvo a cada mousemove
-  document.addEventListener('mousemove', (e) => {
+  function wake() {
+    if (!isTicking) {
+      isTicking = true;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  window.addEventListener('mousemove', (e) => {
     targetX = e.clientX;
     targetY = e.clientY;
-  });
+    wake();
+  }, { passive: true });
 
-  // Interatividade e estados do cursor
   const GROW_SELECTOR = 'a, button, [data-cursor="grow"]';
   const DRAG_SELECTOR = '[data-cursor="drag"]';
 
@@ -122,13 +137,6 @@ export function initCursor() {
     }
   }
 
-  document.addEventListener('mouseover', (e) => {
-    updateCursorState(e.target);
-  });
-
-  document.addEventListener('mouseout', (e) => {
-    updateCursorState(e.relatedTarget);
-  });
-
-  requestAnimationFrame(tick);
+  document.addEventListener('mouseover', (e) => updateCursorState(e.target), { passive: true });
+  document.addEventListener('mouseout', (e) => updateCursorState(e.relatedTarget), { passive: true });
 }

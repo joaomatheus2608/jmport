@@ -2,7 +2,7 @@
  * sobre.js
  * Animações e interações da seção SOBRE MIM
  * - Animação de revelação cinematográfica via GSAP e ScrollTrigger
- * - Micro-parallax tridimensional com o mouse entre foto e tipografia
+ * - Micro-parallax tridimensional com o mouse otimizado (pausa fora da tela)
  * - Suporte a prefers-reduced-motion
  */
 
@@ -90,47 +90,65 @@ export function initSobre() {
     onEnter: () => tl.play(),
   });
 
-  // ── 2. MICRO-PARALLAX TRIDIMENSIONAL COM O MOUSE (Desktop) ──
+  // ── 2. MICRO-PARALLAX OTIMIZADO (Ativo apenas quando a seção estiver visível) ──
   if (isFinePointer && !reducedMotion && photoWrapper && textBack && textFront) {
-    let mouseX = 0;
-    let mouseY = 0;
-    let curPhotoX = 0;
-    let curPhotoY = 0;
-    let curTextX = 0;
-    let curTextY = 0;
+    let mouseX = 0, mouseY = 0;
+    let curPhotoX = 0, curPhotoY = 0;
+    let curTextX = 0, curTextY = 0;
+    let isVisible = false;
+    let rafId = 0;
 
     section.addEventListener('mousemove', (e) => {
       const rect = section.getBoundingClientRect();
       const xNorm = (e.clientX - rect.left) / rect.width - 0.5;
       const yNorm = (e.clientY - rect.top) / rect.height - 0.5;
 
-      // Foto move suavemente no sentido oposto ao texto
-      mouseX = xNorm * 18;
-      mouseY = yNorm * 12;
-    });
+      mouseX = xNorm * 16;
+      mouseY = yNorm * 10;
+      if (!rafId && isVisible) {
+        rafId = requestAnimationFrame(updateParallax);
+      }
+    }, { passive: true });
 
     section.addEventListener('mouseleave', () => {
       mouseX = 0;
       mouseY = 0;
-    });
+    }, { passive: true });
 
     function updateParallax() {
-      curPhotoX += (mouseX - curPhotoX) * 0.06;
-      curPhotoY += (mouseY - curPhotoY) * 0.06;
+      if (!isVisible) {
+        rafId = 0;
+        return;
+      }
 
-      // Texto se move em contra-ponto sutil para ampliar a sensação de profundidade
-      curTextX += (-mouseX * 0.4 - curTextX) * 0.06;
-      curTextY += (-mouseY * 0.4 - curTextY) * 0.06;
+      curPhotoX += (mouseX - curPhotoX) * 0.08;
+      curPhotoY += (mouseY - curPhotoY) * 0.08;
+      curTextX += (-mouseX * 0.4 - curTextX) * 0.08;
+      curTextY += (-mouseY * 0.4 - curTextY) * 0.08;
 
-      // Foto se move suavemente no eixo horizontal e o texto em contra-ponto
-      photoWrapper.style.transform = `translate3d(${curPhotoX.toFixed(2)}px, 0, 0)`;
-      textBack.style.transform = `translate(calc(-50% + ${curTextX.toFixed(2)}px), calc(-50% + ${curTextY.toFixed(2)}px))`;
-      textFront.style.transform = `translate(calc(-50% + ${curTextX.toFixed(2)}px), calc(-50% + ${curTextY.toFixed(2)}px))`;
+      photoWrapper.style.transform = `translate3d(${curPhotoX.toFixed(1)}px, 0, 0)`;
+      const textTransform = `translate(calc(-50% + ${curTextX.toFixed(1)}px), calc(-50% + ${curTextY.toFixed(1)}px))`;
+      textBack.style.transform = textTransform;
+      textFront.style.transform = textTransform;
 
-      requestAnimationFrame(updateParallax);
+      // Se converged, suspende o RAF até o próximo movimento
+      if (Math.abs(mouseX - curPhotoX) > 0.1 || Math.abs(mouseY - curPhotoY) > 0.1) {
+        rafId = requestAnimationFrame(updateParallax);
+      } else {
+        rafId = 0;
+      }
     }
 
-    updateParallax();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isVisible = entry.isIntersecting;
+        if (!isVisible && rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+      });
+    });
+
+    io.observe(section);
   }
 }
-
