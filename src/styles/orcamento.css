@@ -234,30 +234,30 @@
 
 @media (max-width: 768px) {
   #orcamento {
-    padding: 10vh 0 6vh 0;
+    padding: 8vh 0 6vh 0;
     min-height: auto;
   }
 
   .orcamento-container {
-    padding: 0 20px;
+    padding: 0 16px;
   }
 
   .orcamento-card {
     border-radius: 20px;
-    padding: 36px 20px 28px 20px;
+    padding: 32px 18px 24px 18px;
   }
 
   .orcamento-title {
-    font-size: clamp(2.2rem, 9.5vw, 3.4rem);
-    line-height: 1.0;
+    font-size: clamp(1.9rem, 8.5vw, 3.2rem);
+    line-height: 1.02;
     max-width: 100%;
   }
 
   .orcamento-desc {
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.6;
     max-width: 100%;
-    margin-top: 20px;
+    margin-top: 18px;
   }
 
   .orcamento-actions {
@@ -265,18 +265,21 @@
     align-items: stretch;
     width: 100%;
     gap: 12px;
-    margin-top: 32px;
+    margin-top: 28px;
   }
 
   .btn-orcamento-primary,
   .btn-orcamento-secondary {
     width: 100%;
-    padding: 16px 24px;
-    font-size: 14.5px;
+    padding: 15px 20px;
+    font-size: 14px;
+    white-space: normal;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   .orcamento-bottom-line {
-    margin-top: 36px;
+    margin-top: 32px;
     margin-bottom: 20px;
   }
 

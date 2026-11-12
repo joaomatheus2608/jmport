@@ -184,19 +184,23 @@
 ═══════════════════════════════════════════════ */
 @media (max-width: 768px) {
   #projetos {
-    padding: 16px 0;
-    gap: 8px;
+    padding: 20px 0;
+    gap: 12px;
   }
 
   .projetos-marquee-container {
-    /* Cards menores no mobile: cada fileira ocupa ~38% do viewport */
-    height: calc((100svh - 16px - 16px - 8px) / 2 * 0.72);
+    /* Altura estável proporcional no mobile */
+    height: clamp(125px, 24vh, 170px);
+  }
+
+  .projeto-marquee-card {
+    border-radius: 10px;
   }
 
   .projeto-card-badge {
     opacity: 1;
     transform: none;
-    font-size: 9px;
+    font-size: 8.5px;
     padding: 3px 7px;
     bottom: 6px;
     right: 6px;

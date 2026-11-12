@@ -542,45 +542,52 @@
 .hamburger-btn {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 6px;
-  background: none;
+  background: transparent;
   border: none;
-  cursor: none;
-  padding: var(--space-2);
-  z-index: calc(var(--z-overlay) + 1);
+  cursor: pointer;
+  padding: 8px;
+  z-index: 2100;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hamburger-btn span {
   display: block;
   width: 24px;
-  height: 1px;
+  height: 2px;
   background-color: var(--white);
+  border-radius: 1px;
   transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base);
   transform-origin: center;
 }
 
 /* Estado aberto do hambúrguer (X) */
 .hamburger-btn.is-open span:nth-child(1) {
-  transform: translateY(3.5px) rotate(45deg);
+  transform: translateY(4px) rotate(45deg);
 }
 .hamburger-btn.is-open span:nth-child(2) {
-  transform: translateY(-3.5px) rotate(-45deg);
+  transform: translateY(-4px) rotate(-45deg);
 }
 
 /* ── Overlay mobile ── */
 .mobile-menu {
   position: fixed;
   inset: 0;
-  background-color: var(--bg);
-  z-index: var(--z-overlay);
+  background-color: rgba(5, 5, 5, 0.98);
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: var(--space-12) var(--space-5);
-  /* oculto por padrão */
+  padding: var(--space-12) var(--space-6);
   visibility: hidden;
   pointer-events: none;
+  transition: visibility 0.25s ease;
 }
 
 .mobile-menu.is-open {
@@ -592,19 +599,26 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
+  width: 100%;
 }
 
 .mobile-nav-links a {
   font-family: 'Inter Tight', 'Inter', sans-serif;
   font-weight: 800;
-  font-size: 12vw;
+  font-size: clamp(2rem, 11vw, 3.5rem);
   line-height: 1.1;
   letter-spacing: -0.04em;
   color: var(--white);
   text-transform: uppercase;
-  opacity: 0; /* animado via GSAP */
   display: block;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a:active {
+  color: var(--gray-400);
+  transform: translateX(6px);
 }
 
 /* ── Desktop/Mobile layout de nome ── */
@@ -654,45 +668,68 @@
 }
 
 @media (max-width: 768px) {
-  .site-header {
-    padding: var(--space-5) var(--space-5);
-  }
-  .micro-bar {
-    padding: 0 var(--space-5);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-1);
-    top: calc(var(--space-5) + 44px + var(--space-2));
+  #hero {
+    min-height: 100svh;
+    height: 100svh;
   }
 
-  /* Header mobile */
+  .site-header {
+    padding: var(--space-4) var(--space-4);
+  }
+
+  .header-capsule {
+    padding: 0 4px;
+  }
+
+  .micro-bar {
+    padding: 0 var(--space-4);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    top: calc(var(--space-4) + 40px + var(--space-2));
+  }
+
+  .micro-text {
+    font-size: 10px;
+  }
+
+  /* Header mobile comprimido ao rolar */
   .site-header.is-scrolled {
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
   }
 
   .site-header.is-scrolled .header-capsule {
-    max-width: 190px;
+    max-width: 160px;
+    padding: 4px 10px 4px 8px;
+    gap: 8px;
   }
 
   .header-nav,
   .nav-links {
     display: none;
   }
+
   .btn-header-orcamento {
     display: none;
   }
+
   .site-header.is-scrolled .btn-header-orcamento {
     display: inline-flex;
-    padding: 6px 12px;
+    padding: 5px 10px;
     font-size: 10px;
   }
+
   .hamburger-btn {
     display: flex;
     position: absolute;
-    right: var(--space-5);
+    right: var(--space-4);
     top: 50%;
     transform: translateY(-50%);
+    pointer-events: auto !important;
+    z-index: 2200;
   }
 
   /* Footer empilhado */
@@ -700,35 +737,39 @@
     flex-direction: column;
     align-items: flex-start;
     bottom: 0;
-    padding: 0 var(--space-5);
-    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
-    gap: var(--space-4);
+    padding: 0 var(--space-4);
+    padding-bottom: max(var(--space-5), env(safe-area-inset-bottom));
+    gap: var(--space-3);
   }
+
   .hero-tagline {
     max-width: 100%;
-    font-size: clamp(1.2rem, 4.5vw, 1.45rem);
+    font-size: clamp(1.15rem, 5vw, 1.4rem);
+    line-height: 1.2;
   }
+
   .hero-ctas {
     flex-direction: column;
     width: 100%;
     gap: var(--space-2);
   }
+
   .btn-cta-primary,
   .btn-cta-secondary {
     width: 100%;
     justify-content: center;
-    padding: 14px 20px;
+    padding: 13px 18px;
+    font-size: 14px;
   }
 
-  /* SCROLL visível sobre a foto no mobile */
+  /* Remove indicador de scroll que colidia com os botões */
   .scroll-indicator {
-    display: flex;
-    bottom: 160px;
-    z-index: 25;
+    display: none !important;
   }
 
   .hero-photo-img {
-    height: 52svh;
+    height: 48svh;
+    max-height: 420px;
   }
 }
 

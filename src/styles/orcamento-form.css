@@ -491,8 +491,22 @@ body {
 /* ── Responsividade ── */
 @media (max-width: 480px) {
   body { padding: 16px 12px 32px; }
-  .orc-card-inner { padding: 24px 20px; }
-  .orc-btn-next, .orc-btn-confirm { padding: 15px 20px; font-size: 0.95rem; }
+  .orc-headline h1 { font-size: clamp(1.25rem, 5.2vw, 1.7rem); }
+  .orc-card-inner { padding: 22px 16px; }
+  .orc-step-question { font-size: clamp(1.1rem, 4.6vw, 1.35rem); }
+  .orc-choice { padding: 12px 14px; font-size: 0.9rem; }
+  .orc-btn-next, .orc-btn-confirm { padding: 14px 18px; font-size: 0.95rem; }
+}
+
+@media (max-width: 420px) {
+  .orc-summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+  .orc-summary-value {
+    text-align: left;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

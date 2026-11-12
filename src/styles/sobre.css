@@ -177,7 +177,7 @@
   #sobre {
     height: auto;
     min-height: 100svh;
-    padding: 40px 0 32px 0;
+    padding: 48px 0 40px 0;
     overflow-y: visible;
   }
 
@@ -186,29 +186,28 @@
     height: auto;
   }
 
-  .sobre-header {
-    flex-direction: row;
-    margin-bottom: 20px;
-  }
-
   .sobre-stage {
     flex-direction: column;
     align-items: center;
-    min-height: 480px;
+    min-height: auto;
     overflow: visible;
+    position: relative;
   }
 
   .sobre-photo-wrapper {
     position: relative;
-    width: 76vw;
-    max-width: 360px;
-    height: 52vh;
-    margin: 20px auto 0 auto;
+    width: min(76vw, 320px);
+    height: 42vh;
+    max-height: 380px;
+    margin: 16px auto 0 auto;
   }
 
   .sobre-text-layer {
-    top: 30%;
-    font-size: clamp(3.2rem, 16vw, 6rem);
+    top: 22%;
+    font-size: clamp(2.5rem, 13vw, 4.5rem);
+    width: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .sobre-col-left,
@@ -216,7 +215,7 @@
     position: static;
     max-width: 100%;
     width: 100%;
-    margin-top: 24px;
+    margin-top: 20px;
   }
 
   .sobre-p {

@@ -175,16 +175,31 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   1. INVERSÃO DE CORES NO HOVER:
+   1. INVERSÃO DE CORES NO HOVER (Apenas em desktop com mouse):
    O que é preto vira branco e o que é branco vira preto.
    ═══════════════════════════════════════════════════════════ */
-.ecossistema-card:hover {
-  background-color: #FFFFFF !important;
-  border-color: #FFFFFF !important;
-  transform: translateY(-6px);
-  box-shadow:
-    0 24px 50px rgba(0, 0, 0, 0.75),
-    0 0 35px rgba(255, 255, 255, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .ecossistema-card:hover {
+    background-color: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+    transform: translateY(-6px);
+    box-shadow:
+      0 24px 50px rgba(0, 0, 0, 0.75),
+      0 0 35px rgba(255, 255, 255, 0.3);
+  }
+
+  .ecossistema-card:hover .ecossistema-card-num {
+    color: #555555 !important;
+  }
+
+  .ecossistema-card:hover .ecossistema-card-title {
+    color: #050505 !important; /* Branco vira Preto */
+    transform: translateX(3px);
+  }
+
+  .ecossistema-card:hover .ecossistema-card-desc {
+    color: #1a1a1a !important;
+  }
 }
 
 .ecossistema-card-inner {
@@ -193,7 +208,6 @@
   height: 100%;
 }
 
-/* Numeração: cinza no repouso, escura no hover */
 .ecossistema-card-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -206,11 +220,6 @@
   transition: color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ecossistema-card:hover .ecossistema-card-num {
-  color: #555555 !important;
-}
-
-/* Título: branco no repouso, preto no hover */
 .ecossistema-card-title {
   font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
   font-weight: 700;
@@ -224,12 +233,6 @@
     transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ecossistema-card:hover .ecossistema-card-title {
-  color: #050505 !important; /* Branco vira Preto */
-  transform: translateX(3px);
-}
-
-/* Descrição: cinza claro no repouso, cinza escuro no hover */
 .ecossistema-card-desc {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 13.5px;
@@ -239,10 +242,6 @@
   margin: 0;
   margin-top: auto;
   transition: color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ecossistema-card:hover .ecossistema-card-desc {
-  color: #1a1a1a !important; /* Leitura perfeita de alto contraste no fundo branco */
 }
 
 /* ═══════════════════════════════════════════════
